@@ -1,1 +1,30 @@
-# Pipeline that builds the OGC application package
+# Workflow for building OGC application packages
+#
+# Steps:
+# 
+# 1. Parse the input algorithm config to retrieve the build parameters.
+# 2. Build OGC application package executable (docker image).
+# 3. Generate the application package process cwl.
+# 4. Push the OGC application package executable to the image registry.
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_ogc_app_pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate build config for algorithm
+        run: python3 generate_build_config.py algorithm_configs/algorithm_config.yaml
+      - name: Source build config environment variables
+        run: echo ${{ github.workspace }}
+        run: source ${{ github.workspace }}/config.txt
+      - name: Build OGC application package executable
+        run: docker build -t ${{REPO_NAME}}:${{BRANCH}} -f docker/Dockerfile .
+      - name: Build OGC application package process cwl
+        run: python3 generate_app_pack.py algorithm_configs/algorithm_config.yaml $(basename ${ogc_container_url})
+      - name: Push OGC application package executable to image registry
+        run: echo Push to image registry not yet implemented.
+
+          
