@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate build config for algorithm
-        run: python3 ${{ github.workspace }}/generate_build_config.py ${{ github.workspace }}/algorithm_configs/algorithm_config.yaml
+        run: cd ${{ github.workspace }} && ls
+        #python3 ${{ github.workspace }}/generate_build_config.py ${{ github.workspace }}/algorithm_configs/algorithm_config.yaml
       - name: Source build config environment variables
         run: echo ${{ github.workspace }} && source ${{ github.workspace }}/config.txt
       - name: Build OGC application package executable
