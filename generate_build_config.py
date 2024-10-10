@@ -27,7 +27,7 @@ def generate_config(data):
     :return
     """
     try:
-        config_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.txt")
+        config_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
         logging.debug("Writing build config file to {config_filepath}")
         print(f"Writing config file at {config_filepath}")
 
@@ -38,6 +38,7 @@ def generate_config(data):
             f.write(f"REPO_URL_WITH_TOKEN={data.get('repository_url')}\n")
             f.write(f"REPO_NAME={repo_name}\n")
             f.write(f"BRANCH={data.get('algorithm_version')}\n")
+            f.write(f"ALGORITHM_NAME={data.get('algorithm_name')}\n")
             if data.get('build_command'):
                 f.write(f"BUILD_CMD={data.get('build_command')}\n")
         print("Completed writing config file")

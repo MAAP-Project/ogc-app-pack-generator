@@ -42,7 +42,7 @@ $graph:
   id: process
   requirements:
     DockerRequirement:
-      dockerPull: test
+      dockerPull: name:branch
   baseCommand: /app/get-dem/nasa/run.sh
   arguments: []
   inputs:
