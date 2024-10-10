@@ -27,7 +27,7 @@ def generate_config(data):
     :return
     """
     try:
-        config_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.txt")
+        config_filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
         logging.debug("Writing build config file to {config_filepath}")
         print(f"Writing config file at {config_filepath}")
 
