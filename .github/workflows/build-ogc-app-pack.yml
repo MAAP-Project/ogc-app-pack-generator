@@ -19,8 +19,7 @@ jobs:
       - name: Generate build config for algorithm
         run: python3 generate_build_config.py algorithm_configs/algorithm_config.yaml
       - name: Source build config environment variables
-        run: echo ${{ github.workspace }}
-        run: source ${{ github.workspace }}/config.txt
+        run: echo ${{ github.workspace }} && source ${{ github.workspace }}/config.txt
       - name: Build OGC application package executable
         run: docker build -t ${{REPO_NAME}}:${{BRANCH}} -f docker/Dockerfile .
       - name: Build OGC application package process cwl
