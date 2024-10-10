@@ -25,6 +25,7 @@ jobs:
           run: |
             python -m pip install --upgrade pip
             pip install -r requirements.txt
+            pip list
       - name: Generate build config for algorithm
         run: python3 generate_build_config.py algorithm_configs/algorithm_config.yaml
       - name: Source build config environment variables
