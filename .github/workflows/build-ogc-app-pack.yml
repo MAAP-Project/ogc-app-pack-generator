@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate build config for algorithm
-        run: cd ${{ github.workspace }} && ls
+        run: env
         #python3 ${{ github.workspace }}/generate_build_config.py ${{ github.workspace }}/algorithm_configs/algorithm_config.yaml
       - name: Source build config environment variables
         run: echo ${{ github.workspace }} && source ${{ github.workspace }}/config.txt
