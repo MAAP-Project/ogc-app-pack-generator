@@ -23,15 +23,14 @@ jobs:
         with:
           python-version: 3.9
       - name: Generate build config for algorithm
-        run: ls
-        #python3 ${{ github.workspace }}/generate_build_config.py ${{ github.workspace }}/algorithm_configs/algorithm_config.yaml
+        run: python3 generate_build_config.py algorithm_configs/algorithm_config.yaml
       - name: Source build config environment variables
-        run: echo ${{ github.workspace }} && source ${{ github.workspace }}/config.txt
+        run: source config.txt
       - name: Build OGC application package executable
         run: echo ${{ env.REPO_NAME }}
         #run: docker build -t ${{REPO_NAME}}:${{BRANCH}} -f docker/Dockerfile .
       - name: Build OGC application package process cwl
-        run: python3 ${{ github.workspace }}/generate_app_pack.py ${{ github.workspace }}/algorithm_configs/algorithm_config.yaml $(basename ${ogc_container_url})
+        run: python3 generate_app_pack.py algorithm_configs/algorithm_config.yaml $(basename ${ogc_container_url})
       - name: Push OGC application package executable to image registry
         run: echo Push to image registry not yet implemented.
 
