@@ -14,7 +14,7 @@ on:
 
 jobs:
   build_ogc_app_pack:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Generate build config for algorithm
         run: python3 ${{ github.workspace }}/generate_build_config.py ${{ github.workspace }}/algorithm_configs/algorithm_config.yaml
