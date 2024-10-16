@@ -35,13 +35,13 @@ jobs:
           env-file: .env
       - name: Build OGC application package executable
         run: | 
-        docker build -t ${{ env.REPO_NAME }}:${{ env.BRANCH }} \
-        --build-arg BASE_IMAGE_NAME=${{ env.BASE_IMAGE_NAME }} \
-        --build-arg REPO_NAME=${{ env.REPO_NAME }} \
-        --build-arg BRANCH=${{ env.BRANCH }} \
-        --build-arg REPO_URL_WITH_TOKEN=${{ env.REPO_URL_WITH_TOKEN }} \
-        --build-arg BUILD_CMD=${{ env.BUILD_CMD }} \
-        -f docker/Dockerfile .
+          docker build -t ${{ env.REPO_NAME }}:${{ env.BRANCH }} \
+            --build-arg BASE_IMAGE_NAME=${{ env.BASE_IMAGE_NAME }} \
+            --build-arg REPO_NAME=${{ env.REPO_NAME }} \
+            --build-arg BRANCH=${{ env.BRANCH }} \
+            --build-arg REPO_URL_WITH_TOKEN=${{ env.REPO_URL_WITH_TOKEN }} \
+            --build-arg BUILD_CMD=${{ env.BUILD_CMD }} \
+            -f docker/Dockerfile .
       - name: Build OGC application package process cwl
         run: python3 generate_app_pack.py algorithm_configs/algorithm_config.yaml $(basename ${ogc_container_url})
       - name: Push OGC application package executable to image registry
