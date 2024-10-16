@@ -30,6 +30,7 @@ jobs:
       - name: Generate build config for algorithm
         run: python3 generate_build_config.py algorithm_configs/algorithm_config.yaml
       - name: Source build config environment variables
+        uses: c-py/action-dotenv-to-setenv@v5
         with:
           env-file: .env
         run: printenv
