@@ -3,7 +3,7 @@
 algorithm_name: shah-get-dem-nasa-ogc
 algorithm_version: nasa-ogc
 repository_url: https://github.com/MAAP-Project/get-dem.git
-docker_container_url: mas.dit.maap-project.org/root/maap-workspaces/base_images/dps:dps_base_image
+docker_container_url: ghcr.io/maap-project/maap_base:main
 
 # fill out these fields
 # explain what this algorithm does
