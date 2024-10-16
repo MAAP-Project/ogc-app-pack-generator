@@ -33,6 +33,8 @@ jobs:
         uses: c-py/action-dotenv-to-setenv@v5
         with:
           env-file: .env
+      - name: Print env params
+        run: printenv
       - name: Build OGC application package executable
         run: | 
           docker build -t ${{ env.REPO_NAME }}:${{ env.BRANCH }} \
