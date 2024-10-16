@@ -35,7 +35,7 @@ jobs:
           env-file: .env
       - name: Build OGC application package executable
         # run: echo ${{ env.REPO_NAME }}
-        run: docker build -t ${{REPO_NAME}}:${{BRANCH}} -f docker/Dockerfile .
+        run: docker build -t ${{ env.REPO_NAME }}:${{ env.BRANCH }} -f docker/Dockerfile .
       - name: Build OGC application package process cwl
         run: python3 generate_app_pack.py algorithm_configs/algorithm_config.yaml $(basename ${ogc_container_url})
       - name: Push OGC application package executable to image registry
