@@ -1,0 +1,96 @@
+# Workflow for building OGC application packages
+#
+# Steps:
+# 
+# 1. Parse the input algorithm config to retrieve the build parameters.
+# 2. Generate the application package process cwl.
+# 3. Build and publish the algorithm Docker image to GitLab
+# 4. Build and publish the OGC application package to GitLab
+on:
+  push:
+    branches:
+      - main
+      - feature/app-pack-gen
+
+jobs:
+  build_ogc_app_pack:
+    environment: DIT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo content
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip list
+
+      - name: Generate build config for algorithm
+        run: python3 generate_build_config.py algorithm_configs/algorithm_config.yaml
+
+      - name: Source build config environment variables
+        uses: c-py/action-dotenv-to-setenv@v5
+        with:
+          env-file: .env
+
+      - name: Log in to GitHub CR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to GitLab CR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.GITLAB_CONTAINER_REGISTRY }}
+          username: ${{ vars.GITLAB_USERNAME }}
+          password: ${{ secrets.OGC_APP_PACK_GEN_CI_GH_ACTION_TOKEN }}
+
+      - name: Generate OGC application package process cwl
+        run: python3 generate_app_pack.py algorithm_configs/algorithm_config.yaml ${{ env.REPO_NAME }}:${{ env.BRANCH }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            ${{ vars.GITLAB_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: algorithm
+
+      - name: Build and push algorithm Docker image
+        id: push-algorithm
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.algorithm
+          build-args: |
+            BASE_IMAGE_NAME=${{ env.BASE_IMAGE_NAME }}
+            REPO_NAME=${{ env.REPO_NAME }}
+            BRANCH=${{ env.BRANCH }}
+            REPO_URL_WITH_TOKEN=${{ env.REPO_URL_WITH_TOKEN }}
+            BUILD_CMD=${{ env.BUILD_CMD }}
+          push: true
+          tags: ${{ vars.GITLAB_CONTAINER_REGISTRY }}/${{ env.ALGORITHM_NAME }}.${{ env.BRANCH }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and push OGC application package Docker image
+        id: push-ogc_app_pack
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.ogc
+          build-args: |
+            PROCESS_CWL=${{ env.ALGORITHM_NAME }}.${{ env.BRANCH }}.process.cwl
+          push: true
+          tags: ${{ vars.GITLAB_CONTAINER_REGISTRY }}/ogc_${{ env.ALGORITHM_NAME }}.${{ env.BRANCH }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
+          
