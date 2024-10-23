@@ -3,3 +3,6 @@ app_pack.log
 
 # Algorithm build config
 config.txt
+
+# Python
+ogc_app_pack/__pycache__
