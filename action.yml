@@ -5,6 +5,9 @@ inputs:
   algorithm-config-path:
     description: "Path to the algorithm configuration file"
     required: true
+  github-token:
+    description: "GitHub token for authentication"
+    required: true
 
 runs:
   using: "composite"
@@ -22,9 +25,11 @@ runs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip list
+      shell: bash
 
     - name: Generate build config for algorithm
       run: python3 generate_build_config.py ${{ inputs.algorithm-config-path }}
+      shell: bash
 
     - name: Source build config environment variables
       uses: c-py/action-dotenv-to-setenv@v5
@@ -36,10 +41,11 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ inputs.github-token }}
 
     - name: Generate OGC application package process CWL
       run: python3 generate_app_pack.py ${{ inputs.algorithm-config-path }} ${{ env.REPO_NAME }}:${{ env.BRANCH }}
+      shell: bash
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
