@@ -28,8 +28,10 @@ runs:
       shell: bash
 
     - name: Generate build config for algorithm
-      run: python3 ./generate_build_config.py ${{ inputs.algorithm-config-path }}
+      run: python3 ${ GITHUB_ACTION_PATH }/generate_build_config.py ${{ inputs.algorithm-config-path }}
       shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
 
     - name: Source build config environment variables
       uses: c-py/action-dotenv-to-setenv@v5
