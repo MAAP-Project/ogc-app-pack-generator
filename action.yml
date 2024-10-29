@@ -28,7 +28,7 @@ runs:
       shell: bash
 
     - name: Generate build config for algorithm
-      run: python3 ${ GITHUB_ACTION_PATH }/generate_build_config.py ${{ inputs.algorithm-config-path }}
+      run: python3 ${{ GITHUB_ACTION_PATH }}/generate_build_config.py ${{ inputs.algorithm-config-path }}
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
@@ -46,7 +46,7 @@ runs:
         password: ${{ inputs.github-token }}
 
     - name: Generate OGC application package process CWL
-      run: python3 ${ GITHUB_ACTION_PATH }/generate_app_pack.py ${{ inputs.algorithm-config-path }} ${{ env.REPO_NAME }}:${{ env.BRANCH }}
+      run: python3 ${{ GITHUB_ACTION_PATH }}/generate_app_pack.py ${{ inputs.algorithm-config-path }} ${{ env.REPO_NAME }}:${{ env.BRANCH }}
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
