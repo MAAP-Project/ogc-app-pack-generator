@@ -1,0 +1,20 @@
+name: 'Build OGC Application Package'
+description: 'Build OGC Application Package'
+inputs:
+  algorithm-config:
+    description: 'Algorithm configuration path'
+    required: true
+    default: 'algorithm_configs/algorithm_config.yaml'
+outputs:
+  random-number:
+    description: "Test"
+    value: "test"
+runs:
+  using: "composite"
+  steps:
+    - name: Algo config path
+      run: echo "Hello $ALGO_CONFIG_DIR."
+      shell: bash
+      env:
+        ALGO_CONFIG_DIR: ${{ inputs.algorithm-config }}
+
