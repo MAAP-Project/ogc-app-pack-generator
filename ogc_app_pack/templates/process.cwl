@@ -1,42 +1,40 @@
-cwlVersion: v1.0
+cwlVersion: v1.2
 $graph:
-- class: Workflow
-  label: ALGORITHM_NAME
-  doc: ALGORITHM_DESCRIPTION
-  id: ALGORITHM_ID
-  inputs:
-    INPUT_NAME:
-      type: INPUT_TYPE
-      label: INPUT_LABEL
-      doc: INPUT_DESCRIPTION
-      default: INPUT_DEFAULT
-  outputs:
-    output_context:
-      type: Directory
-      outputSource: process/job_output
-  steps:
-    process:
-      run: "#process"
-      in:
-        INPUT_NAME: INPUT_NAME
-      out: [job_output]
-- class: CommandLineTool
-  id: process
-  requirements:
-    DockerRequirement:
-      dockerPull: DOCKER_URL
-  baseCommand: RUN_COMMAND
-  arguments: []
-  inputs:
-    INPUT_NAME:
-      type: INPUT_TYPE
-      inputBinding:
-        position: 1
-  outputs:
-    job_output:
-      type: Directory
-      outputBinding:
-        glob: output*
+  - class: Workflow
+    label: ""
+    doc: ""
+    id: ""
+    inputs: {}
+    outputs:
+      out:
+        type: Directory
+        outputSource: process/outputs_result
+    steps:
+      process:
+        run: "#process"
+        in: {}
+        out:
+          - outputs_result
+
+  - class: CommandLineTool
+    id: process
+    requirements:
+      DockerRequirement:
+        dockerPull: ""
+      NetworkAccess:
+        networkAccess: true
+      EnvVarRequirement:
+        envDef:
+          PATH: "/opt/conda/bin:/opt/conda/condabin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    baseCommand: ""
+    arguments: []
+    inputs: {}
+    outputs:
+      outputs_result:
+        outputBinding:
+          glob: ./output*
+        type: Directory
+
 $namespaces:
   s: https://schema.org/
 s:softwareVersion: 1.0.0

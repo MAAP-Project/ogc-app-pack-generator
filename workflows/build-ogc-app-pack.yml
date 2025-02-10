@@ -54,7 +54,7 @@ jobs:
           password: ${{ secrets.OGC_APP_PACK_GEN_CI_GH_ACTION_TOKEN }}
 
       - name: Generate OGC application package process cwl
-        run: python3 generate_app_pack.py algorithm_configs/algorithm_config.yaml ${{ env.REPO_NAME }}:${{ env.BRANCH }}
+        run: python3 generate_app_pack.py algorithm_configs/algorithm_config.yaml process_cwl/process.cwl ./ogc_app_pack/templates/process.cwl
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
