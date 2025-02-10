@@ -10,7 +10,7 @@ on:
   push:
     branches:
       - main
-      - feature/app-pack-gen
+      - feature/create-action
 
 jobs:
   build_ogc_app_pack:
