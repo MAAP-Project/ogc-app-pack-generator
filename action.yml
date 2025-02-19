@@ -34,7 +34,7 @@ runs:
       shell: bash
 
     - name: Print action inputs
-      run: echo "Inputs: ${{ inputs }}"
+      run: echo "Inputs ${{ inputs.dockerfile-path }}"
       shell: bash
 
     # - name: Generate build config for algorithm
