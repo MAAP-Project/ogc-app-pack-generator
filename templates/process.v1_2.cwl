@@ -19,8 +19,6 @@ $graph:
         dockerPull: null
       NetworkAccess:
         networkAccess: true
-      EnvVarRequirement:
-        envDef: null
     baseCommand: null
     inputs: null
     outputs: null

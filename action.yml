@@ -39,7 +39,6 @@ runs:
 
     - name: Set docker tag environment variable
       run: |
-          
           echo "DOCKER_TAG=ghcr.io/${{ env.GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest" >>${GITHUB_ENV}
       shell: bash
 
@@ -49,6 +48,21 @@ runs:
           WORKFLOW_FILE_NAME="process_${REPO_NAME}_${GITHUB_REF_NAME}.cwl"
           WORKFLOW_FILE_NAME="${WORKFLOW_FILE_NAME//\//_}"
           echo "WORKFLOW_FILE_NAME=$WORKFLOW_FILE_NAME" >>${GITHUB_ENV}
+      shell: bash
+
+    - name: Generate OGC application package process CWL
+      run: python3 ${{ github.action_path }}/build_cwl_workflow.py --yaml-file ${{ inputs.workflow-configuration-path }}
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    - name: Check output
+      run: |
+        ls -lrt workflows/
+      shell: bash
+
+    - name: Run CWL validator
+      run: cwltool --validate --strict --verbose workflows/${{ env.WORKFLOW_FILE_NAME }}
       shell: bash
 
     - name: Log in to GitHub Container Registry
@@ -67,21 +81,6 @@ runs:
         push: true
         tags: ${{ env.DOCKER_TAG }}
         labels: ${{ steps.meta.outputs.labels }}
-
-    - name: Generate OGC application package process CWL
-      run: python3 ${{ github.action_path }}/build_cwl_workflow.py --yaml-file ${{ inputs.workflow-configuration-path }}
-      shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
-
-    - name: Check output
-      run: |
-        ls -lrt workflows/
-      shell: bash
-
-    - name: Run CWL validator
-      run: cwltool --validate --strict --verbose workflows/${{ env.WORKFLOW_FILE_NAME }}
-      shell: bash
 
     - name: Configure Git
       run: |
