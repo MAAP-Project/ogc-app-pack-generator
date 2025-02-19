@@ -48,6 +48,8 @@ runs:
       run: |
           REPO_NAME=$(basename ${{ env.GITHUB_REPO_LOWER }})
           echo $REPO_NAME
+          WORKFLOW_FILE_NAME=process_${ REPO_NAME }_${ GITHUB_REF_NAME }.cwl
+          echo $WORKFLOW_FILE_NAME
 
       shell: bash
 
