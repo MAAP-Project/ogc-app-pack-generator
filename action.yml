@@ -33,12 +33,12 @@ runs:
         pip list
       shell: bash
 
-    - name: Print action inputs
-      run: echo "Inputs ${{ inputs.dockerfile-path }}"
-      shell: bash
+    # - name: Print action inputs
+    #   run: echo "Inputs ${{ inputs.dockerfile-path }}"
+    #   shell: bash
 
     - name: Validate inputs
-      run: echo "GITHUB_REPO_LOWER=${github.repository@L}" >>${GITHUB_ENV}
+      run: echo "GITHUB_REPO_LOWER=${github.repository,,}" >>${GITHUB_ENV}
       shell: bash
 
     # - name: Generate build config for algorithm
