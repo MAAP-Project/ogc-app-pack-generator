@@ -19,6 +19,10 @@ $graph:
         dockerPull: null
       NetworkAccess:
         networkAccess: true
+      ResourceRequirement:
+        ramMin: null
+        coresMin: null
+        outdirMax: null
     baseCommand: null
     inputs: null
     outputs: null

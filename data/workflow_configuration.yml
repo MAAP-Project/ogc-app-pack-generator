@@ -10,10 +10,11 @@ author: arthurduf
 contributor: arthurduf
 license: https://github.com/MAAP-Project/sardem-sarsen/blob/main/LICENSE
 release_notes: None
-env_def: [
-  PATH: "/opt/conda/bin:/opt/conda/condabin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-] 
 run_command: /app/sardem-sarsen/sardem-sarsen.sh
+ram_min: 5 # mebibytes
+cores_min: 1
+outdir_max: 20 # mebibytes
+
 inputs:
   - name: bbox
     doc: Bounding box as 'LEFT BOTTOM RIGHT TOP'
@@ -23,6 +24,7 @@ inputs:
     doc: STAC catalog folder
     label: catalog folder
     type: Directory
+
 outputs:
   - name: out
     type: Directory

@@ -70,8 +70,11 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
                 "citation": [("$namespaces", "s:citation")],
                 "code_repository": [("$namespaces", "s:codeRepository")],
                 "contributor": [("$namespaces", "s:contributor")],
+                "cores_min": [("$graph", 1, "requirements", "ResourceRequirement", "coresMin")],
                 "keywords": [("$namespaces", "s:keywords")],
                 "license": [("$namespaces", "s:license")],
+                "outdir_max": [("$graph", 1, "requirements", "ResourceRequirement", "outdirMax")],
+                "ram_min": [("$graph", 1, "requirements", "ResourceRequirement", "ramMin")],
                 "release_notes": [("$namespaces", "s:releaseNotes")],
                 "run_command": [("$graph", 1, "baseCommand")]
               }
