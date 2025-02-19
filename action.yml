@@ -47,9 +47,8 @@ runs:
     - name: Set workflow file name environment variable
       run: |
           REPO_NAME=$(basename ${{ env.GITHUB_REPO_LOWER }})
-          WORKFLOW_FILE_NAME=process_${ REPO_NAME }_${ GITHUB_REF_NAME }.cwl
-          WORKFLOW_FILE_NAME="${WORKFLOW_FILE_NAME//\//_}" 
-          echo "WORKFLOW_FILE_NAME=$WORKFLOW_FILE_NAME" >>${GITHUB_ENV}
+          echo REPO_NAME
+
       shell: bash
 
     - name: Log in to GitHub Container Registry
@@ -93,3 +92,6 @@ runs:
     #     git commit -m "Added process.cwl via github actions"
     #     git push
     #   shell: bash
+          #     WORKFLOW_FILE_NAME=process_${ REPO_NAME }_${ GITHUB_REF_NAME }.cwl
+          # WORKFLOW_FILE_NAME="${WORKFLOW_FILE_NAME//\//_}" 
+          # echo "WORKFLOW_FILE_NAME=$WORKFLOW_FILE_NAME" >>${GITHUB_ENV}
