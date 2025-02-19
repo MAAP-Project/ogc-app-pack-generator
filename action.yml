@@ -38,7 +38,7 @@ runs:
       shell: bash
 
     - name: Validate inputs
-      run: echo "GITHUB_REPO_LOWER=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
+      run: echo "GITHUB_REPO_LOWER=${github.repository@L}" >>${GITHUB_ENV}
       shell: bash
 
     # - name: Generate build config for algorithm
