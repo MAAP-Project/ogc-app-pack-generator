@@ -70,7 +70,7 @@ runs:
         #   REPO_URL_WITH_TOKEN=${{ env.REPO_URL_WITH_TOKEN }}
         #   BUILD_CMD=${{ env.BUILD_CMD }}
         push: true
-        tags: ghcr.io/${{ GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest
+        tags: ghcr.io/${{ env.GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest
         labels: ${{ steps.meta.outputs.labels }}
 
     - name: Generate OGC application package process CWL
