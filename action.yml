@@ -47,8 +47,7 @@ runs:
     - name: Set workflow file name environment variable
       run: |
           REPO_NAME=$(basename ${{ env.GITHUB_REPO_LOWER }})
-          echo $REPO_NAME
-          WORKFLOW_FILE_NAME=process_${ REPO_NAME }_${{ github.ref_name }}.cwl
+          WORKFLOW_FILE_NAME=process_${ REPO_NAME }_${ GITHUB_REF_NAME }.cwl
           WORKFLOW_FILE_NAME="${WORKFLOW_FILE_NAME//\//_}" 
           echo "WORKFLOW_FILE_NAME=$WORKFLOW_FILE_NAME" >>${GITHUB_ENV}
       shell: bash
