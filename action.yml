@@ -43,8 +43,8 @@ runs:
         username: ${{ github.repository_owner }}
         password: ${{ inputs.github-token }}
 
-    - name: Generate OGC application package process CWL
-      run: python3 ${{ github.action_path }}/generate_app_pack.py ${{ inputs.algorithm-config-path }} ${{ env.REPO_NAME }}:${{ env.BRANCH }}
+    - name: Generate OGC CWL workflow
+      run: python3 ${{ github.action_path }}/build_cwl_workflow.py ${{ inputs.algorithm-config-path }} ${{ env.REPO_NAME }}:${{ env.BRANCH }}
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
