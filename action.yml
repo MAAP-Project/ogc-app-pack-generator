@@ -37,6 +37,10 @@ runs:
       run: echo "Inputs ${{ inputs.dockerfile-path }}"
       shell: bash
 
+    - name: Validate inputs
+      run: |
+        echo "GITHUB_REPO_LOWER=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
+
     # - name: Generate build config for algorithm
     #   run: python3 ${{ github.action_path }}/generate_build_config.py nasa/algorithm_config.yml
     #   shell: bash
@@ -66,7 +70,7 @@ runs:
         #   REPO_URL_WITH_TOKEN=${{ env.REPO_URL_WITH_TOKEN }}
         #   BUILD_CMD=${{ env.BUILD_CMD }}
         push: true
-        tags: ghcr.io/${{ github.repository }}.${{ github.ref_name }}:latest
+        tags: ghcr.io/${{ GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest
         labels: ${{ steps.meta.outputs.labels }}
 
     - name: Generate OGC application package process CWL
