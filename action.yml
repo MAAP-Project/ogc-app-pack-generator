@@ -33,10 +33,14 @@ runs:
         pip list
       shell: bash
 
-    - name: Set environment variables
+    - name: Create env variable of GitHub repo name to lowercase
       run: |
           GITHUB_REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
           echo "GITHUB_REPO_LOWER=$GITHUB_REPO_LOWER" >>${GITHUB_ENV}
+      shell: bash
+
+    - name: Set docker tag environment variable
+      run: |
           echo "DOCKER_TAG=ghcr.io/${{ env.GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest" >>${GITHUB_ENV}
       shell: bash
 
