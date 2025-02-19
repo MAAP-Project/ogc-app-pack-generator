@@ -31,6 +31,11 @@ runs:
         pip list
       shell: bash
 
+    - name: Check that cwl installed
+      run: |
+        cwltool -h
+      shell: bash
+
     - name: Create env variable of lowercase GitHub repo name
       run: |
           GITHUB_REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
@@ -39,7 +44,8 @@ runs:
 
     - name: Set docker tag environment variable
       run: |
-          echo "DOCKER_TAG=ghcr.io/${{ env.GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest" >>${GITHUB_ENV}
+          
+          echo "DOCKER_TAG=ghcr.io/${{ env.GITHUB_REPO_LOWER }}:${{ github.ref_name }}" >>${GITHUB_ENV}
       shell: bash
 
     - name: Set workflow file name environment variable
@@ -88,9 +94,9 @@ runs:
         git config --global user.name "github-actions[bot]"
       shell: bash
 
-    # - name: Commit and push workflow file
-    #   run: |
-    #     git add process.cwl
-    #     git commit -m "Added process.cwl via github actions"
-    #     git push
-    #   shell: bash
+    - name: Commit and push workflow file
+      run: |
+        git add workflows/${{ env.WORKFLOW_FILE_NAME }}
+        git commit -m "Committed workflow via github actions"
+        git push
+      shell: bash
