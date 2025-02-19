@@ -55,9 +55,6 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     if not os.path.exists(workflow_output_dir):
         os.makedirs(workflow_output_dir)
 
-    # Set environment variables used by GitHub action
-    os.environ['WORKFLOW_FILE_NAME'] = 'process_' + config["algorithm_name"].replace('/', '_') + '_' + config["algorithm_version"].replace('/', '_') + '.cwl'
-
 
     # Attempt to retrieve information required to be compliant with OGC and CWL v1.2 best practices
     #

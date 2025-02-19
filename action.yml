@@ -47,7 +47,7 @@ runs:
     - name: Set workflow file name environment variable
       run: |
           REPO_NAME=$(basename ${{ env.GITHUB_REPO_LOWER }})
-          echo REPO_NAME
+          echo $REPO_NAME
 
       shell: bash
 
