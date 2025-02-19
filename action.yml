@@ -33,7 +33,7 @@ runs:
         pip list
       shell: bash
 
-    - name: Create env variable of GitHub repo name to lowercase
+    - name: Create env variable of lowercase GitHub repo name
       run: |
           GITHUB_REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
           echo "GITHUB_REPO_LOWER=$GITHUB_REPO_LOWER" >>${GITHUB_ENV}
@@ -66,6 +66,12 @@ runs:
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    - name: Check output
+      run: |
+        ls -lrt
+        printenv
+      shell: bash
 
     # - name: Configure Git
     #   run: |
