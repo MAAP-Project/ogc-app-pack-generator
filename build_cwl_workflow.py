@@ -42,22 +42,6 @@ def set_path_value(workflow, path, value):
     workflow[path[-1]] = value
 
 
-def handle_value(key, value):
-    """
-    Processes the given key-value pair for cases where a simple read from the
-    YML input is insufficient. 
-    """
-    if key == "env_def":
-        val = []
-        for env in value:
-            for key, value in env.items():
-                val.append((key, value))
-        val = dict(val)
-    else:
-        return value
-    return val
-
-
 def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     # Load workflow configuration YML file
     with open(yaml_file, 'r') as f:
@@ -80,7 +64,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     # Define mapping of YML input file fields to OGC and CWL generic fields
     OGC_CWL_KEY_MAP = {
                 "algorithm_description": [("$graph", 0, "doc")],
-                "algorithm_name": [("$graph", 0, "label"), ("$graph", 0, "id"), ("$graph", 1, "requirements", "DockerRequirement", "dockerPull")],
+                "algorithm_name": [("$graph", 0, "label"), ("$graph", 0, "id")],
                 "algorithm_version": [("$namespaces", "s:version")],
                 "author": [("$namespaces", "s:author")],
                 "citation": [("$namespaces", "s:citation")],
@@ -95,7 +79,6 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     for key in OGC_CWL_KEY_MAP:
         targets = OGC_CWL_KEY_MAP[key]
         if key in config:
-            #value = handle_value(key, config[key])
             value = config[key]
             for target in targets:
                 set_path_value(workflow, target, value)
@@ -194,18 +177,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     # that will not be in the YML input file
     workflow["$namespaces"]["s:dateCreated"] = date.today()
     workflow["$namespaces"]["s:softwareVersion"] = "1.0.0"
-
-    # Define additional mapping that extends beyond OGC and CWL v1.2 best practices
-    EXT_KEY_MAP = {
-                "env_def": [("$graph", 1, "requirements", "EnvVarRequirement", "envDef")]
-              }
-
-    for key in EXT_KEY_MAP:
-        targets = EXT_KEY_MAP[key]
-        if key in config:
-            value = handle_value(key, config[key])
-            for target in targets:
-                set_path_value(workflow, target, value)
+    workflow["$graph"][1]["requirements"]["DockerRequirement"]["dockerPull"] = os.getenv('DOCKER_TAG')
 
 
     # Dump data to workflow file

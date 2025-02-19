@@ -33,24 +33,12 @@ runs:
         pip list
       shell: bash
 
-    # - name: Print action inputs
-    #   run: echo "Inputs ${{ inputs.dockerfile-path }}"
-    #   shell: bash
-
-    - name: Validate inputs
+    - name: Set environment variables
       run: |
           GITHUB_REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
           echo "GITHUB_REPO_LOWER=$GITHUB_REPO_LOWER" >>${GITHUB_ENV}
+          echo "DOCKER_TAG=ghcr.io/${{ env.GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest" >>${GITHUB_ENV}
       shell: bash
-
-    # - name: Generate build config for algorithm
-    #   run: python3 ${{ github.action_path }}/generate_build_config.py nasa/algorithm_config.yml
-    #   shell: bash
-
-    # - name: Source build config environment variables
-    #   uses: c-py/action-dotenv-to-setenv@v5
-    #   with:
-    #     env-file: ./.github/actions/.env
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
@@ -65,14 +53,8 @@ runs:
       with:
         context: .
         file: ${{ inputs.dockerfile-path }}
-        # build-args: |
-        #   BASE_IMAGE_NAME=${{ env.BASE_IMAGE_NAME }}
-        #   REPO_NAME=${{ env.REPO_NAME }}
-        #   BRANCH=${{ env.BRANCH }}
-        #   REPO_URL_WITH_TOKEN=${{ env.REPO_URL_WITH_TOKEN }}
-        #   BUILD_CMD=${{ env.BUILD_CMD }}
         push: true
-        tags: ghcr.io/${{ env.GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest
+        tags: ${{ env.DOCKER_TAG }}
         labels: ${{ steps.meta.outputs.labels }}
 
     - name: Generate OGC application package process CWL
