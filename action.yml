@@ -66,7 +66,7 @@ runs:
         #   REPO_URL_WITH_TOKEN=${{ env.REPO_URL_WITH_TOKEN }}
         #   BUILD_CMD=${{ env.BUILD_CMD }}
         push: true
-        tags: ghcr.io/maap-project/${{ GITHUB_REPOSITORY##*/ }}.${{ GITHUB_REF_NAME }}:latest
+        tags: ghcr.io/${{ GITHUB_REPOSITORY }}.${{ GITHUB_REF_NAME }}:latest
         labels: ${{ steps.meta.outputs.labels }}
 
     - name: Generate OGC application package process CWL
