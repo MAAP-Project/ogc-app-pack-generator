@@ -65,17 +65,17 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     OGC_CWL_KEY_MAP = {
                 "algorithm_description": [("$graph", 0, "doc")],
                 "algorithm_name": [("$graph", 0, "label"), ("$graph", 0, "id")],
-                "algorithm_version": [("$namespaces", "s:version")],
-                "author": [("$namespaces", "s:author")],
-                "citation": [("$namespaces", "s:citation")],
-                "code_repository": [("$namespaces", "s:codeRepository")],
-                "contributor": [("$namespaces", "s:contributor")],
+                "algorithm_version": [("s:version")],
+                "author": [("s:author")],
+                "citation": [("s:citation")],
+                "code_repository": [("s:codeRepository")],
+                "contributor": [("s:contributor")],
                 "cores_min": [("$graph", 1, "requirements", "ResourceRequirement", "coresMin")],
-                "keywords": [("$namespaces", "s:keywords")],
-                "license": [("$namespaces", "s:license")],
+                "keywords": [("s:keywords")],
+                "license": [("s:license")],
                 "outdir_max": [("$graph", 1, "requirements", "ResourceRequirement", "outdirMax")],
                 "ram_min": [("$graph", 1, "requirements", "ResourceRequirement", "ramMin")],
-                "release_notes": [("$namespaces", "s:releaseNotes")],
+                "release_notes": [("s:releaseNotes")],
                 "run_command": [("$graph", 1, "baseCommand")]
               }
     
@@ -178,8 +178,8 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
 
     # Add information that is required to be compliant with OGC and CWL best practices
     # that will not be in the YML input file
-    workflow["$namespaces"]["s:dateCreated"] = date.today()
-    workflow["$namespaces"]["s:softwareVersion"] = "1.0.0"
+    workflow["s:dateCreated"] = date.today()
+    workflow["s:softwareVersion"] = "1.0.0"
     workflow["$graph"][1]["requirements"]["DockerRequirement"]["dockerPull"] = os.getenv('DOCKER_TAG')
 
 

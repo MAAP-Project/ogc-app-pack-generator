@@ -27,23 +27,25 @@ $graph:
     inputs: null
     outputs: null
 
+s:author:
+  - class: s:Person
+    s:name: null
+
+s:contributor:
+  - class: s:Person
+    s:name: null
+
+s:citation: null
+s:codeRepository: null
+s:dateCreated: null
+s:license: null
+s:softwareVersion: null
+s:version: null
+s:releaseNotes: null
+s:keywords: null
+
 $namespaces:
   s: https://schema.org/
-  s:author:
-    - class: s:Person
-      s:name: null
 
-  s:contributor:
-    - class: s:Person
-      s:name: null
-
-  s:citation: null
-  s:codeRepository: null
-  s:dateCreated: null
-  s:license: null
-  s:softwareVersion: null
-  s:version: null
-  s:releaseNotes: null
-  s:keywords: null
 $schemas:
 - http://schema.org/version/9.0/schemaorg-current-http.rdf
