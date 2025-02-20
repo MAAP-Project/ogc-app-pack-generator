@@ -37,12 +37,6 @@ def set_path_value(workflow, path, value):
     """
     Set value to path in workflow template.
     """
-    print(path)
-    print(len(path))
-    if len(path) is 1:
-        workflow = workflow[key]
-        workflow[path[0]] = value
-
     for key in path[:-1]:
         workflow = workflow[key]
     workflow[path[-1]] = value
@@ -71,17 +65,17 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     OGC_CWL_KEY_MAP = {
                 "algorithm_description": [("$graph", 0, "doc")],
                 "algorithm_name": [("$graph", 0, "label"), ("$graph", 0, "id")],
-                "algorithm_version": [("s:version")],
-                "author": [("s:author")],
-                "citation": [("s:citation")],
-                "code_repository": [("s:codeRepository")],
-                "contributor": [("s:contributor")],
+                "algorithm_version": [("s:version",)],
+                "author": [("s:author",)],
+                "citation": [("s:citation",)],
+                "code_repository": [("s:codeRepository",)],
+                "contributor": [("s:contributor",)],
                 "cores_min": [("$graph", 1, "requirements", "ResourceRequirement", "coresMin")],
-                "keywords": [("s:keywords")],
-                "license": [("s:license")],
+                "keywords": [("s:keywords",)],
+                "license": [("s:license",)],
                 "outdir_max": [("$graph", 1, "requirements", "ResourceRequirement", "outdirMax")],
                 "ram_min": [("$graph", 1, "requirements", "ResourceRequirement", "ramMin")],
-                "release_notes": [("s:releaseNotes")],
+                "release_notes": [("s:releaseNotes",)],
                 "run_command": [("$graph", 1, "baseCommand")]
               }
     
