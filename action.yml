@@ -40,7 +40,7 @@ runs:
 
     - name: Set docker tag environment variable
       run: |
-          DOCKER_TAG="ghcr.io/${ env.GITHUB_REPO_LOWER }:${GITHUB_REF_NAME}"
+          DOCKER_TAG="ghcr.io/${{ env.GITHUB_REPO_LOWER }}:${GITHUB_REF_NAME}"
           DOCKER_TAG="${DOCKER_TAG//\//_}"
           echo "DOCKER_TAG=$DOCKER_TAG" >>${GITHUB_ENV}
       shell: bash
