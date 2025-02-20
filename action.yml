@@ -43,6 +43,7 @@ runs:
           GITHUB_REF_NAME_CLEAN="${GITHUB_REF_NAME//\//_}"
           DOCKER_TAG="ghcr.io/${{ env.GITHUB_REPO_LOWER }}:${GITHUB_REF_NAME_CLEAN}"
           echo "DOCKER_TAG=$DOCKER_TAG" >>${GITHUB_ENV}
+          printenv
       shell: bash
 
     - name: Set workflow file name environment variable
