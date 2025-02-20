@@ -37,6 +37,11 @@ def set_path_value(workflow, path, value):
     """
     Set value to path in workflow template.
     """
+    print(path)
+    if path.len() is 1:
+        workflow = workflow[key]
+        workflow[path[0]] = value
+
     for key in path[:-1]:
         workflow = workflow[key]
     workflow[path[-1]] = value
