@@ -95,6 +95,7 @@ runs:
 
     - name: Commit and push workflow file
       run: |
+        git pull
         git add workflows/${{ env.WORKFLOW_FILE_NAME }}
         git commit -m "Committed workflow via github actions"
         git push
