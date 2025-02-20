@@ -40,7 +40,7 @@ runs:
 
     - name: Set docker tag environment variable
       run: |
-          echo "DOCKER_TAG=ghcr.io/${{ env.GITHUB_REPO_LOWER }}.${{ github.ref_name }}:latest" >>${GITHUB_ENV}
+          echo "DOCKER_TAG=ghcr.io/${{ env.GITHUB_REPO_LOWER }}:${{ github.ref_name }}" >>${GITHUB_ENV}
       shell: bash
 
     - name: Set workflow file name environment variable
