@@ -97,6 +97,12 @@ runs:
     - name: Commit and push workflow file
       run: |
         git add workflows/${{ env.WORKFLOW_FILE_NAME }}
+
+        if git diff --staged --quiet; then
+          echo "No changes to commit."
+          exit 0
+        fi
+
         git commit -m "Committed workflow via github actions"
         git push
       shell: bash
