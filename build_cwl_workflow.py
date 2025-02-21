@@ -66,10 +66,10 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
                 "algorithm_description": [("$graph", 0, "doc")],
                 "algorithm_name": [("$graph", 0, "label"), ("$graph", 0, "id")],
                 "algorithm_version": [("s:version",)],
-                "author": [("s:author",)],
+                "author": [("s:author", 0, "s:name")],
                 "citation": [("s:citation",)],
                 "code_repository": [("s:codeRepository",)],
-                "contributor": [("s:contributor",)],
+                "contributor": [("s:contributor", 0, "s:name")],
                 "cores_min": [("$graph", 1, "requirements", "ResourceRequirement", "coresMin")],
                 "keywords": [("s:keywords",)],
                 "license": [("s:license",)],
@@ -181,7 +181,6 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     workflow["s:dateCreated"] = date.today()
     workflow["s:softwareVersion"] = "1.0.0"
     workflow["$graph"][1]["requirements"]["DockerRequirement"]["dockerPull"] = os.getenv('DOCKER_TAG')
-
 
     # Dump data to workflow file
     workflow_file = os.path.join(workflow_output_dir, os.getenv('WORKFLOW_FILE_NAME'))
