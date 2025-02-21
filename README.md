@@ -19,7 +19,7 @@ Copy this workflow into the file that was just created and update where necessar
 on:
   push:
     branches:
-      - `**`
+      - '**'
 jobs:
   build_app_pack:
     environment: DIT
