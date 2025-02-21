@@ -183,7 +183,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     workflow["$graph"][1]["requirements"]["DockerRequirement"]["dockerPull"] = os.getenv('DOCKER_TAG')
 
     # Dump data to workflow file
-    workflow_file = os.path.join(workflow_output_dir, os.getenv('WORKFLOW_FILE_NAME'))
+    workflow_file = os.path.join(workflow_output_dir, os.getenv('WORKFLOW_FILE_NAME', 'process.cwl'))
     with open(workflow_file, 'w') as f:
         yaml.dump(workflow, f, default_flow_style=False, sort_keys=False)
 
