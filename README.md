@@ -3,9 +3,9 @@ GitHub action to build OGC application packages compliant with CWL and OGC best 
 
 This action accepts a YML file describing an algorithm as input and uses it to populate a CWL workflow template file to produce a workflow file. The generated workflow file is validated using `cwltool` and `ogc_ap_validator` to ensure it is compliant with CWL and OGC best practices before it is then committed to the working branch under `workflows/`. A docker image will be built from the user-specified Dockerfile and pushed to the working repo's GitHub Container Registry.
 
-See `data/workflow_configuration.yml` for a sample YML input file.
+See `data/algorithm_config.yml` for a sample YML input file.
 
-See `workflows/process_sardem-sarsen_mlucas_nasa-ogc.cwl` for a sample workflow file generated from the `data/worklow_configuration.yml` input.
+See `data/process_sardem-sarsen_mlucas_nasa-ogc.cwl` for a sample workflow file generated from the `data/algorithm_config.yml` input.
 
 ## Build OGC application package using GitHub actions
 
@@ -32,7 +32,7 @@ jobs:
         uses: MAAP-Project/ogc-app-pack-generator@feature/create-action
         with:
           # Specify action inputs
-          workflow-configuration-path: nasa/ogc/workflow_configuration.yml
+          workflow-configuration-path: nasa/ogc/algorithm_config.yml
           dockerfile-path: nasa/Dockerfile
 ```
 
@@ -46,7 +46,7 @@ Once these updates are made, and the working repo's workflow is triggered, that 
 ## Build CWL workflow file from the command line
 Run the following to generate a CWL workflow file from the command line:
 
-`python build_cwl_workflow.py --yaml-file data/workflow_configuration.yml`
+`python build_cwl_workflow.py --yaml-file data/algorithm_config.yml`
 
 This will create `workflows/process.cwl`.
 

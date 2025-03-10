@@ -5,7 +5,7 @@ Inputs:
 
 --yaml-file (required)
 YML file containing algorithm information that will be parsed to create the workflow file.
-See data/workflow_configuration.yml for an example. This example contains the information
+See data/algorithm_config.yml for an example. This example contains the information
 needed to create a workflow that is compliant with OGC and CWL best practices.
 
 --workflow-output-dir (optional)
@@ -23,7 +23,7 @@ them. For example, if the process name is `myProcess` and its version is `main`,
 workflow file will be named `process_myProcess_main.cwl`.
 
 Sample execution:
-build_cwl_workflow.py --yaml-file data/workflow_configuration.yml --workflow-output-dir workflows/
+build_cwl_workflow.py --yaml-file data/algorithm_config.yml --workflow-output-dir workflows/
 
 '''
 
