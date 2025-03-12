@@ -24,6 +24,11 @@ jobs:
   build_app_pack:
     environment: DIT
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      packages: write
+
     steps:
       - name: Checkout repo content
         uses: actions/checkout@v4
