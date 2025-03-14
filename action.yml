@@ -10,6 +10,9 @@ inputs:
   dockerfile-path:
     description: "Path to Dockerfile"
     required: true
+  deploy-app-pack:
+    description: "Flag that controls whether or not to deploy application package"
+    required: true
 
 runs:
   using: "composite"
@@ -104,4 +107,9 @@ runs:
 
         git commit -m "Committed workflow via github actions"
         git push
+      shell: bash
+
+    - name: Deploy application package
+      if: ${{ inputs.deploy-app-pack }}
+      run: python3 ${{ github.action_path }}/deploy_app_pack.py
       shell: bash
