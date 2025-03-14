@@ -110,6 +110,6 @@ runs:
       shell: bash
 
     - name: Deploy application package
-      if: ${{ inputs.deploy-app-pack }}
+      if: ${{ inputs.deploy-app-pack == 'true' }}
       run: python3 ${{ github.action_path }}/deploy_app_pack.py
       shell: bash
