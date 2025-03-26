@@ -42,6 +42,18 @@ def set_path_value(workflow, path, value):
     workflow[path[-1]] = value
 
 
+def add_input_default(input_type, input_default):
+    """
+    Add default value for input.
+    """
+    match input_type:
+        case "Directory" | "File":
+            return {"class": input_type, "path": input_default}
+        case _:
+            return input_default
+        
+            
+
 def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     # Load workflow configuration YML file
     with open(yaml_file, 'r') as f:
@@ -104,6 +116,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
         input_type = input.get("type")
         input_doc = input.get("doc")
         input_label = input.get("label")
+        input_default = input.get("default")
 
         if input_name is None or input_type is None:
             print("Expected name and type to be specified for input!")
@@ -123,6 +136,11 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
                 "position": len(process_inputs) + 1,
                 "prefix": f"--{input_name}"
         }}}
+        
+        # If default value was provided, add that in
+        if input_default is not None:
+            tmp[input_name]["default"] = add_input_default(input_type, input_default)
+
         process_inputs.append(tmp)
 
         # Step inputs
