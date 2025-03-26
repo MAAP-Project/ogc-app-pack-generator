@@ -31,11 +31,20 @@ import yaml
 import argparse
 import os
 from datetime import date
+import logging
 
 
 def set_path_value(workflow, path, value):
     """
-    Set value to path in workflow template.
+    Assign value at given path within workflow template.
+
+    Args:
+        workflow (dict): The workflow template (nested dictionary) where the value will be set.
+        path (list): A list of keys that specifies the location within the workflow template where the value should be assigned.
+        value: Value to assign to the specified path in the workflow template.
+
+    Returns:
+        None
     """
     for key in path[:-1]:
         workflow = workflow[key]
@@ -45,6 +54,13 @@ def set_path_value(workflow, path, value):
 def add_input_default(input_type, input_default):
     """
     Add default value for input.
+
+    Args:
+        input_type (str): The type of the input (e.g. "Directory", "string").
+        input_default (str): The default value to assign to the input.
+
+    Returns:
+        dict or str: Returns a dict for special types and a string for primitive types.
     """
     match input_type:
         case "Directory" | "File":
@@ -55,6 +71,17 @@ def add_input_default(input_type, input_default):
             
 
 def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
+    """
+    Create a CWL file compliant with CWL and OGC best practices from a YAML input file.
+
+    Args:
+        yaml_file (str): Path to input YAML file.
+        workflow_output_dir (str): Path to workflow output directory.
+        template_file (str): Path to CWL template file to use when building CWL file.
+
+    Return:
+        None
+    """
     # Load workflow configuration YML file
     with open(yaml_file, 'r') as f:
         config = yaml.safe_load(f)
@@ -98,7 +125,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
             for target in targets:
                 set_path_value(workflow, target, value)
         else:
-            print("Expected key `{}` not found!", key)
+            logging.warning("Expected key `{}` not found in algorithm config.", key)
 
 
     # Handle inputs and outputs separately since the same information is used in
@@ -119,7 +146,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
         input_default = input.get("default")
 
         if input_name is None or input_type is None:
-            print("Expected name and type to be specified for input!")
+            logging.warning("Expected both input type and input name to be provided.")
         
         # Workflow inputs
         tmp = {input_name: {
@@ -156,7 +183,6 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     workflow["$graph"][1]["inputs"] = process_inputs
     workflow["$graph"][0]["steps"]["process"]["in"] = step_inputs
 
-
     for output in config.get("outputs", []):
         output_name = output.get("name")
         output_type = output.get("type")
@@ -164,7 +190,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
         #output_label = output.get("label")
 
         if output_name is None or output_type is None:
-            print("Expected name and type to be specified for output!")
+            logging.warning("Expected output name and output type to be specified.")
 
         # Workflow outputs
         tmp = {output_name: {
@@ -214,4 +240,5 @@ if __name__ == "__main__":
     parser.add_argument("--cwl-template-file", type=str, default="templates/process.v1_2.cwl", help="Path to the CWL template file. Default template used is compliant with CWL v1.2.")
 
     args = parser.parse_args()
+    print("Building CWL workflow file...\nInput file: {} \nWorkflow output directory: {} \nCWL template file: {}".format(args.yaml_file, args.workflow_output_dir, args.cwl_template_file))
     yaml_to_cwl(args.yaml_file, args.workflow_output_dir, args.cwl_template_file)
