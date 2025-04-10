@@ -138,8 +138,17 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     step_outputs = []
     process_outputs = []
 
+    input_param_names = set()
+
     for input in config.get("inputs", []):
         input_name = input.get("name")
+
+        # Check for input parameter name uniqueness
+        if input_name not in input_param_names:
+            input_param_names.add(input_name)
+        else:
+            raise ValueError(f"Duplicate input parameter name '{input_name}'. Input parameters must be unique.")
+
         input_type = input.get("type")
         input_doc = input.get("doc")
         input_label = input.get("label")
