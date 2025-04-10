@@ -39,4 +39,4 @@ $namespaces:
   s: https://schema.org/
 s:softwareVersion: 1.0.0
 schemas:
-- http://schema.org/version/9.0/schemaorg-current-http.rdf
+- https://raw.githubusercontent.com/schemaorg/schemaorg/refs/heads/main/data/releases/9.0/schemaorg-current-http.rdf
