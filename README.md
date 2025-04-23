@@ -39,11 +39,16 @@ jobs:
           # Specify action inputs
           workflow-configuration-path: nasa/ogc/algorithm_config.yml
           dockerfile-path: nasa/Dockerfile
+        env:
+          # MAAP PGT token is required to deploy the process
+          MAAP_PGT: ${{ secrets.MAAP_PGT_MLUCAS }}
 ```
 
 The workflow is currently set to trigger on commits to any branch. To limit workflow triggering to a specific branch, replace `'**'` with your branch name.
 
 The action currently accepts two inputs: the path to the workflow configuration YML and the path to the Dockerfile, both relative to the root of the working repo. Update these parameters to point to the workflow configuration and Dockerfile in your repo.
+
+Users will need to add their `MAAP_PGT` token to their GitHub repository's secrets if they want to deploy their processes to MAAP.
 
 Once these updates are made, and the working repo's workflow is triggered, that will trigger generation of the OGC application package. The resulting CWL workflow file will be committed to the working branch under `workflows/` and the Docker image will be pushed to the repo's GHCR.
 

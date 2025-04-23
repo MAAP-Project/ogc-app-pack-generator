@@ -5,6 +5,7 @@ import yaml
 import requests
 import argparse
 import os
+import json
 
 def deploy_app_pack(template_file, process_cwl_url, app_pack_registry):
     with open(template_file, 'r') as f:
@@ -14,7 +15,6 @@ def deploy_app_pack(template_file, process_cwl_url, app_pack_registry):
         data["executionUnit"]["href"] = process_cwl_url
 
     maap_pgt_token = os.getenv('MAAP_PGT')
-
     if not maap_pgt_token:
         print("Environment variable `MAAP_PGT` is not set.")
         exit(1)
@@ -23,7 +23,7 @@ def deploy_app_pack(template_file, process_cwl_url, app_pack_registry):
         'proxy-ticket': maap_pgt_token
     }
 
-    r = requests.post(app_pack_registry, data=data, headers=headers)
+    r = requests.post(app_pack_registry, data=json.dumps(data), headers=headers)
     r.raise_for_status()
     print(r.text)
     print("Application package successfully deployed.")
