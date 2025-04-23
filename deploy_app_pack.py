@@ -20,11 +20,14 @@ def deploy_app_pack(template_file, process_cwl_url, app_pack_registry):
         exit(1)
 
     headers = {
-        'proxy-ticket': maap_pgt_token
+        'proxy-ticket': maap_pgt_token,
+        'Content-Type': 'application/json'
     }
 
     r = requests.post(app_pack_registry, data=json.dumps(data), headers=headers)
-    print(r)
+    print(r.url)
+    print(r.headers)
+    print(r.raw)
     r.raise_for_status()
     print(r.text)
     print("Application package successfully deployed.")
