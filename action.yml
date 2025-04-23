@@ -16,6 +16,7 @@ inputs:
   application-package-registry:
     description: "URL to application package registry to deploy application packages to"
     required: true
+    default: "https://api.dit.maap-project.org/api/ogc/processes"
 
 runs:
   using: "composite"

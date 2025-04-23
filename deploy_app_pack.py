@@ -12,10 +12,10 @@ def deploy_app_pack(template_file, process_cwl_url, app_pack_registry):
     if data.get("executionUnit", {}).get("href"):
         data["executionUnit"]["href"] = process_cwl_url
 
-    # r = requests.post(app_pack_registry, data=data)
-    # r.raise_for_status()
-    # print(r.text)
-    # print("Application package successfully deployed.")
+    r = requests.post(app_pack_registry, data=data)
+    r.raise_for_status()
+    print(r.text)
+    print("Application package successfully deployed.")
 
 
 if __name__ == "__main__":
