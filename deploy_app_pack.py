@@ -24,6 +24,7 @@ def deploy_app_pack(template_file, process_cwl_url, app_pack_registry):
     }
 
     r = requests.post(app_pack_registry, data=json.dumps(data), headers=headers)
+    print(r)
     r.raise_for_status()
     print(r.text)
     print("Application package successfully deployed.")
