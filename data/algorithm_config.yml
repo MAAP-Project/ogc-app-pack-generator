@@ -26,6 +26,11 @@ inputs:
     label: catalog folder
     type: Directory
     default: catalog_dir
+  - name: stac_asset_name
+    doc: STAC asset name
+    label: asset name
+    type: string?
+    default: PRODUCT
 
 outputs:
   - name: out

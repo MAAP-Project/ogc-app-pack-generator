@@ -15,6 +15,10 @@ $graph:
       doc: STAC catalog folder
       label: catalog folder
       type: Directory
+    stac_asset_name:
+      doc: STAC asset name
+      label: asset name
+      type: string?
   outputs:
     out:
       type: Directory
@@ -25,6 +29,7 @@ $graph:
       in:
         bbox: bbox
         stac_catalog_folder: stac_catalog_folder
+        stac_asset_name: stac_asset_name
       out:
       - outputs_result
 - class: CommandLineTool
@@ -54,6 +59,12 @@ $graph:
       default:
         class: Directory
         path: catalog_dir
+    stac_asset_name:
+      type: string?
+      inputBinding:
+        position: 3
+        prefix: --stac_asset_name
+      default: PRODUCT
   outputs:
     outputs_result:
       outputBinding:
@@ -67,7 +78,7 @@ s:contributor:
   s:name: arthurduf
 s:citation: https://github.com/MAAP-Project/sardem-sarsen.git
 s:codeRepository: https://github.com/MAAP-Project/sardem-sarsen.git
-s:dateCreated: 2025-03-26
+s:dateCreated: 2025-04-29
 s:license: https://github.com/MAAP-Project/sardem-sarsen/blob/main/LICENSE
 s:softwareVersion: 1.0.0
 s:version: mlucas/nasa_ogc

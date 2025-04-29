@@ -83,7 +83,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Deploy application package.")
     parser.add_argument("--process-cwl-url", type=str, help="URL or path to process CWL describing application package to deploy", required=True)
     parser.add_argument("--registry", type=str, help="Application package registry to deploy application package to.")
-    parser.add_argument("--app-pack-template-file", type=str, default="ogc_app_pack/templates/ogcapppkg.yml", help="Path to the OGC API processes compliant OGC application package schema template.")
+    parser.add_argument("--app-pack-template-file", type=str, default="templates/ogcapppkg.yml", help="Path to the OGC API processes compliant OGC application package schema template.")
 
     args = parser.parse_args()
     print(f"Parameters: \n \
