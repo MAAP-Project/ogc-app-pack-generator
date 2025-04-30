@@ -30,7 +30,7 @@ inputs:
     doc: STAC asset name
     label: asset name
     type: string?
-    default: PRODUCT
+    default: edu/GRD_HD/SA/S1A_IW_GRDH_1SDV_20250330T171421_20250330T171446_058537_073E4F_985B
 
 outputs:
   - name: out

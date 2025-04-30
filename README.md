@@ -79,3 +79,8 @@ ap-validator workflows/process.cwl
 Sample command to run a workflow. Be sure to provide any required inputs:
 
 `cwltool workflows/process.cwl --input_1 "input1" --input_2 "input2"`
+
+Inputs may also be provided as a YML file, for example:
+
+`cwltool workflows/process.cwl data/input.yml`
+

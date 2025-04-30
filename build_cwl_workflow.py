@@ -158,15 +158,15 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
             logging.warning("Expected both input type and input name to be provided.")
         
         # Workflow inputs
-        tmp = {input_name: {
+        workflow_tmp = {input_name: {
             "doc": input_doc,
             "label": input_label,
             "type": input_type
         }}
-        workflow_inputs.append(tmp)
+        workflow_inputs.append(workflow_tmp)
 
         # Process inputs
-        tmp = {input_name: {
+        process_tmp = {input_name: {
             "type": input_type,
             "inputBinding": {
                 "position": len(process_inputs) + 1,
@@ -175,13 +175,14 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
         
         # If default value was provided, add that in
         if input_default is not None:
-            tmp[input_name]["default"] = add_input_default(input_type, input_default)
+            workflow_tmp[input_name]["default"] = add_input_default(input_type, input_default)
+            process_tmp[input_name]["default"] = add_input_default(input_type, input_default)
 
-        process_inputs.append(tmp)
+        process_inputs.append(process_tmp)
 
         # Step inputs
-        tmp = {input_name: input_name}
-        step_inputs.append(tmp)
+        step_tmp = {input_name: input_name}
+        step_inputs.append(step_tmp)
 
     # Need to merge the lists of dicts to properly format output
     workflow_inputs = {k: v for d in workflow_inputs for k, v in d.items()}
