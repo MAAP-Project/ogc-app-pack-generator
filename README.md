@@ -1,7 +1,7 @@
 # OGC Application Package Generator
 GitHub action to build OGC application packages compliant with CWL and OGC best practices.
 
-This action accepts a YML file describing an algorithm as input and uses it to populate a CWL workflow template file to produce a workflow file. The generated workflow file is validated using `cwltool` and `ogc_ap_validator` to ensure it is compliant with CWL and OGC best practices before it is then committed to the working branch under `workflows/`. A docker image will be built from the user-specified Dockerfile and pushed to the working repo's GitHub Container Registry.
+This action builds a CWL workflow file from an input YML file. The CWL workflow file is validated using `cwltool` and `ogc_ap_validator` to ensure it is compliant with CWL and OGC best practices. It is then committed to the client repository's working branch under `workflows/`. A docker image will be built from the user-specified Dockerfile and pushed to the client repository's GitHub Container Registry.
 
 See `data/algorithm_config.yml` for a sample YML input file.
 
@@ -9,11 +9,11 @@ See `data/process_sardem-sarsen_mlucas_nasa-ogc.cwl` for a sample workflow file 
 
 ## Build OGC application package using GitHub actions
 
-To use this action in a client repo, create a GitHub workflow file at the root of your repo:
+To use this action in a client repository, create a GitHub workflow file at the root of your repository:
 
 `touch .github/workflows/my_workflow.yml`
 
-Copy this workflow into the file that was just created and update where necessary:
+Copy the sample workflow below into `my_workflow.yml` and be sure to change the action inputs if needed:
 
 ```
 on:
@@ -39,19 +39,24 @@ jobs:
           # Specify action inputs
           workflow-configuration-path: nasa/ogc/algorithm_config.yml
           dockerfile-path: nasa/Dockerfile
+          deploy-app-pack: true
         env:
           # MAAP PGT token is required to deploy the process
           MAAP_PGT: ${{ secrets.MAAP_PGT_MLUCAS }}
 ```
 
-The workflow is currently set to trigger on commits to any branch. To limit workflow triggering to a specific branch, replace `'**'` with your branch name.
+### Action Inputs:
 
-The action currently accepts two inputs: the path to the workflow configuration YML and the path to the Dockerfile, both relative to the root of the working repo. Update these parameters to point to the workflow configuration and Dockerfile in your repo.
+| Parameter        | Description           | Required | Default | Type  |
+|:-------------:|:---------------------:|:-----:|:-----:|:-----:|
+| workflow-configuration-path      | Path to algorithm configuration YML file | Yes | - | string ex. `nasa/ogc/algorithm_config.yml` |
+| dockerfile-path | Path to Dockerfile that will be used to build the docker image | Yes | - | string ex. `nasa/Dockerfile`
+| deploy-app-pack | Flag indicating whether or not to deploy the application package to a registry | No | false | Boolean ex. `true`|
+| application-package-registry | Deployment request URL used to deploy the application package to a registry | No | `https://api.dit.maap-project.org/api/ogc/processes`| string ex `https://api.dit.maap-project.org/api/ogc/processes`|
+| MAAP_PGT token | The MAAP_PGT token used in the application package deployment request. The sample workflow shows this parameter being accessed from the client repository's secrets store. | No | - | string
 
-Users will need to add their `MAAP_PGT` token to their GitHub repository's secrets if they want to deploy their processes to MAAP.
-
-Once these updates are made, and the working repo's workflow is triggered, that will trigger generation of the OGC application package. The resulting CWL workflow file will be committed to the working branch under `workflows/` and the Docker image will be pushed to the repo's GHCR.
-
+> [!NOTE]
+> The workflow is currently set to trigger on commits to any branch. To limit workflow triggering to a specific branch, replace `'**'` with your branch name.
 
 ## Build CWL workflow file from the command line
 Run the following to generate a CWL workflow file from the command line:
@@ -73,14 +78,16 @@ ap-validator workflows/process.cwl
 ```
 
 > [!NOTE]
-> This script only builds the CWL and not the Docker image. Users will have to update the Docker requirements in the generated CWL to point to an existing image.
+> If running this script outside of the GitHub action, it will only generate the CWL and not the Docker image. Users will have to update the Docker requirements in the generated CWL to point to an existing image if they wish to execute the workflow.
 
 ## Run CWL workflow
-Sample command to run a workflow. Be sure to provide any required inputs:
+Sample command to execute a workflow. Be sure to provide any required inputs:
 
 `cwltool workflows/process.cwl --input_1 "input1" --input_2 "input2"`
 
 Inputs may also be provided as a YML file, for example:
 
 `cwltool workflows/process.cwl data/input.yml`
+
+See `data/input.yml` for a sample YML input file.
 
