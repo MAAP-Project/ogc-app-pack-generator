@@ -30,8 +30,27 @@ build_cwl_workflow.py --yaml-file data/algorithm_config.yml --workflow-output-di
 import yaml
 import argparse
 import os
+import re
 from datetime import date
 import logging
+
+
+def process_value(target, value):
+    """
+    Processes algorithm config value to ensure expected format for targeted OGC CWL field.
+
+    Args:
+        target: Target OGC CWL field.
+        value: Algorithm config value to be processed.
+
+    Returns:
+        str: Processed algorithm config value.
+    """
+    match target[-1]:
+        case "s:version":
+            return re.sub(r'[^a-zA-Z0-9 ]', '_', value)
+        case _:
+            return value
 
 
 def set_path_value(workflow, path, value):
@@ -121,8 +140,8 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     for key in OGC_CWL_KEY_MAP:
         targets = OGC_CWL_KEY_MAP[key]
         if key in config:
-            value = config[key]
             for target in targets:
+                value = process_value(target, config[key])
                 set_path_value(workflow, target, value)
         else:
             logging.warning("Expected key `{}` not found in algorithm config.", key)
