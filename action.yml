@@ -116,5 +116,9 @@ runs:
 
     - name: Deploy application package
       if: ${{ inputs.deploy-app-pack == 'true' }}
-      run: python3 ${{ github.action_path }}/deploy_app_pack.py --process-cwl-url workflows/${{ env.WORKFLOW_FILE_NAME }} --registry ${{ inputs.application-package-registry }} --app-pack-template-file ${{ github.action_path }}/templates/ogcapppkg.yml
+      run: |
+        FILE_PATH=workflows/${{ env.WORKFLOW_FILE_NAME }}
+        RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/${FILE_PATH}"
+        echo ${RAW_URL}
+        python3 ${{ github.action_path }}/deploy_app_pack.py --process-cwl-url ${RAW_URL} --registry ${{ inputs.application-package-registry }} --app-pack-template-file ${{ github.action_path }}/templates/ogcapppkg.yml
       shell: bash

@@ -6,6 +6,7 @@ import requests
 import argparse
 import os
 import json
+import sys
 
 
 def submit_request(url, data, headers):
@@ -13,45 +14,43 @@ def submit_request(url, data, headers):
     Submit a request to the application package registry. A POST request is attempted first. If the response to the POST
     is an HTTP status code of 409, this indicates the process already exists then a PUT request will be submitted,
     overwriting the existing process.
-
+    
     Args:
         url (str): The registry URL.
         data (dict): The request body, containing the process CWL URL or path.
         headers (dict): The request headers.
 
     Returns:
-        dict or Exception: 
-            - On success, returns the JSON response from the server.
-            - On HTTPError (status code 409), attempts to submit a PUT request and returns the JSON response.
-            - On other errors, returns the exception raised during the request process.
-
-    Raises:
-        RequestException: If the HTTP response status code is greater than 400.
-        Exception: For all other exceptions.
+        bool: True if the request (POST or fallback PUT) completes successfully, False otherwise.
     """
     try:
-        r = requests.post(url, data=json.dumps(data), headers=headers)
-        r.raise_for_status()
-        return r.json()
+        response = requests.post(url, data=json.dumps(data), headers=headers)
+        response.raise_for_status()
+        return True
+
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 409:
-            response = json.loads(e.response.text)
-            print(response["detail"])
-
-            # Get process id for process that is already registered
             try:
-                process_id = response["additionalProperties"]["processID"]
-            except KeyError:
-                print("Key not found.")
-            else:
-                url = url + f'/{process_id}'
-                r = requests.put(url, data=json.dumps(data), headers=headers)
-                r.raise_for_status()
-                return r.json()
+                r = e.response.json()
+                print(r.get("detail", None))
+
+                process_id = r["additionalProperties"]["processID"]
+                url = f"{url}/{process_id}"
+
+                response = requests.put(url, data=json.dumps(data), headers=headers)
+                response.raise_for_status()
+                return True
+
+            except (KeyError, requests.exceptions.RequestException, ValueError) as e:
+                print(f"Failed to submit request: {e}")
+                return False
         else:
-            return e
+            print(f"HTTP error: {e}")
+            return False
+
     except Exception as e:
-        return e
+        print(f"Unexpected error: {e}")
+        return False
 
 
 def deploy_app_pack(process_cwl_url, app_pack_registry, template_file):
@@ -84,8 +83,7 @@ def deploy_app_pack(process_cwl_url, app_pack_registry, template_file):
         'Content-Type': 'application/json'
     }
 
-    r = submit_request(app_pack_registry, data, headers)
-    print(r)
+    return submit_request(app_pack_registry, data, headers)
 
 
 if __name__ == "__main__":
@@ -103,4 +101,5 @@ if __name__ == "__main__":
     with open(args.app_pack_template_file, 'r') as f:
         data = yaml.safe_load(f)
         
-    deploy_app_pack(process_cwl_url=args.process_cwl_url, app_pack_registry=args.registry, template_file=args.app_pack_template_file)
+    if not deploy_app_pack(process_cwl_url=args.process_cwl_url, app_pack_registry=args.registry, template_file=args.app_pack_template_file):
+        sys.exit(1)
