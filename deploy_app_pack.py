@@ -35,14 +35,15 @@ def submit_request(url, data, headers):
         return r.json()
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 409:
-            print("Process exists. Overwriting existing process.")
+            response = json.loads(e.response.text)
+            print(response["detail"])
+
             # Get process id for process that is already registered
             try:
-                value = e.response["additionProperties"]["process_id"]
+                process_id = response["additionalProperties"]["processID"]
             except KeyError:
                 print("Key not found.")
             else:
-                process_id = value
                 url = url + f'/{process_id}'
                 r = requests.put(url, data=json.dumps(data), headers=headers)
                 r.raise_for_status()

@@ -52,11 +52,11 @@ jobs:
 | workflow-configuration-path      | Path to algorithm configuration YML file | Yes | - | string ex. `nasa/ogc/algorithm_config.yml` |
 | dockerfile-path | Path to Dockerfile that will be used to build the docker image | Yes | - | string ex. `nasa/Dockerfile`
 | deploy-app-pack | Flag indicating whether or not to deploy the application package to a registry | No | false | Boolean ex. `true`|
-| application-package-registry | Deployment request URL used to deploy the application package to a registry | No | `https://api.dit.maap-project.org/api/ogc/processes`| string ex `https://api.dit.maap-project.org/api/ogc/processes`|
+| application-package-registry | Deployment request URL used to deploy the application package to a registry | No | - | string ex `https://api.dit.maap-project.org/api/ogc/processes`|
 | MAAP_PGT token | The MAAP_PGT token used in the application package deployment request. The sample workflow shows this parameter being accessed from the client repository's secrets store. | No | - | string
 
 > [!NOTE]
-> The workflow is currently set to trigger on commits to any branch. To limit workflow triggering to a specific branch, replace `'**'` with your branch name.
+> The workflow is currently set to trigger on a push to any branch. To limit workflow triggering to a specific branch, replace `'**'` with your branch name.
 
 ## Build CWL workflow file from the command line
 Run the following to generate a CWL workflow file from the command line:

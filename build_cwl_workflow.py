@@ -144,7 +144,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
                 value = process_value(target, config[key])
                 set_path_value(workflow, target, value)
         else:
-            logging.warning("Expected key `{}` not found in algorithm config.", key)
+            logging.warning(f'Expected key `{key}` not found in algorithm config.')
 
 
     # Handle inputs and outputs separately since the same information is used in
@@ -174,7 +174,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
         input_default = input.get("default")
 
         if input_name is None or input_type is None:
-            logging.warning("Expected both input type and input name to be provided.")
+            logging.warning("Expected both input type and input name to be provided for input.")
         
         # Workflow inputs
         workflow_tmp = {input_name: {
