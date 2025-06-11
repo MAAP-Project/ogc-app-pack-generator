@@ -53,7 +53,7 @@ jobs:
 | workflow-configuration-path      | Path to algorithm configuration YML file | Yes | - | string ex. `nasa/ogc/algorithm_config.yml` |
 | dockerfile-path | Path to Dockerfile that will be used to build the docker image | Yes | - | string ex. `nasa/Dockerfile`
 | deploy-app-pack | Flag indicating whether or not to deploy the application package to a registry | No | false | Boolean ex. `true`|
-| application-package-registry | Deployment request URL used to deploy the application package to a registry | No | - | string ex `https://api.dit.maap-project.org/api/ogc/processes`|
+| app-pack-register-endpoint | Deployment request URL used to deploy the application package to a registry | No | - | string ex `https://api.dit.maap-project.org/api/ogc/processes`|
 | MAAP_PGT token | The MAAP_PGT token used in the application package deployment request. The sample workflow shows this parameter being accessed from the client repository's secrets store. | No | - | string
 
 > [!NOTE]
