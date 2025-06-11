@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use OGC App Pack Generator Action
-        uses: MAAP-Project/ogc-app-pack-generator@feature/create-action
+        uses: MAAP-Project/ogc-app-pack-generator@main
         with:
           # Specify action inputs
           workflow-configuration-path: nasa/ogc/algorithm_config.yml
