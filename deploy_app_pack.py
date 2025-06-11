@@ -25,6 +25,7 @@ def submit_request(url, data, headers):
     """
     try:
         response = requests.post(url, data=json.dumps(data), headers=headers)
+        print(response.text)
         response.raise_for_status()
         return True
 
@@ -37,8 +38,10 @@ def submit_request(url, data, headers):
                 process_id = r["additionalProperties"]["processID"]
                 url = f"{url}/{process_id}"
 
+                print("Submitting PUT request to modify existing process...")
                 response = requests.put(url, data=json.dumps(data), headers=headers)
                 response.raise_for_status()
+                print(f'Response: {response.text}')
                 return True
 
             except (KeyError, requests.exceptions.RequestException, ValueError) as e:
