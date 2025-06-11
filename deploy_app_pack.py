@@ -59,7 +59,7 @@ def deploy_app_pack(process_cwl_url, app_pack_registry, template_file):
 
     Args:
         process_cwl_url (str): The URL or path to the process CWL.
-        app_pack_registry (str): The URL of the application package registry to which the process will be deployed.
+        app_pack_register_endpoint (str): The URL of the application package registry to which the process will be deployed.
         template_file (str): The path to the YAML template file containing the deployment request.
 
     Returns:
@@ -89,17 +89,17 @@ def deploy_app_pack(process_cwl_url, app_pack_registry, template_file):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Deploy application package.")
     parser.add_argument("--process-cwl-url", type=str, help="URL or path to process CWL describing application package to deploy", required=True)
-    parser.add_argument("--registry", type=str, help="Application package registry to deploy application package to.")
+    parser.add_argument("--app-pack-register-endpoint", type=str, help="Application package registry to deploy application package to.")
     parser.add_argument("--app-pack-template-file", type=str, default="templates/ogcapppkg.yml", help="Path to the OGC API processes compliant OGC application package schema template.")
 
     args = parser.parse_args()
     print(f"Parameters: \n \
     Process CWL: {args.process_cwl_url} \n \
-    Application package registry: {args.registry} \n \
+    Application package register endpoint: {args.app_pack_register_endpoint} \n \
     Template file: {args.app_pack_template_file}")
 
     with open(args.app_pack_template_file, 'r') as f:
         data = yaml.safe_load(f)
         
-    if not deploy_app_pack(process_cwl_url=args.process_cwl_url, app_pack_registry=args.registry, template_file=args.app_pack_template_file):
+    if not deploy_app_pack(process_cwl_url=args.process_cwl_url, app_pack_registry=args.app_pack_register_endpoint, template_file=args.app_pack_template_file):
         sys.exit(1)

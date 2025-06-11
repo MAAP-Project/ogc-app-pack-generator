@@ -13,10 +13,10 @@ inputs:
   deploy-app-pack:
     description: "Flag that controls whether or not to deploy application package"
     required: true
-  application-package-registry:
+    default: false
+  app-pack-register-endpoint:
     description: "URL to application package registry to deploy application packages to"
-    required: true
-    default: "https://api.dit.maap-project.org/api/ogc/processes"
+    required: false
 
 
 runs:
@@ -33,9 +33,7 @@ runs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install PyYAML ruamel.yaml
-        pip install cwltool
-        pip install ogc_ap_validator
+        pip install -r requirements.txt
         pip list
       shell: bash
 
@@ -66,17 +64,17 @@ runs:
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
-    - name: Check output
+    - name: Check generated CWL workflow
       run: |
-        ls -lrt workflows/
+        ls -lrt cwl_workflows/
       shell: bash
 
     - name: Run CWL validator
-      run: cwltool --validate --strict --verbose workflows/${{ env.WORKFLOW_FILE_NAME }}
+      run: cwltool --validate --strict --verbose cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
       shell: bash
 
     - name: Run OGC validator
-      run: ap-validator --detail all workflows/${{ env.WORKFLOW_FILE_NAME }}
+      run: ap-validator --detail all cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
       shell: bash
 
     - name: Log in to GitHub Container Registry
@@ -103,7 +101,7 @@ runs:
 
     - name: Commit and push workflow file
       run: |
-        git add workflows/${{ env.WORKFLOW_FILE_NAME }}
+        git add cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
 
         if git diff --staged --quiet; then
           echo "No changes to commit."
@@ -117,7 +115,7 @@ runs:
     - name: Deploy application package
       if: ${{ inputs.deploy-app-pack == 'true' }}
       run: |
-        FILE_PATH=workflows/${{ env.WORKFLOW_FILE_NAME }}
+        FILE_PATH=cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
         RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/${FILE_PATH}"
-        python3 ${{ github.action_path }}/deploy_app_pack.py --process-cwl-url ${RAW_URL} --registry ${{ inputs.application-package-registry }} --app-pack-template-file ${{ github.action_path }}/templates/ogcapppkg.yml
+        python3 ${{ github.action_path }}/deploy_app_pack.py --process-cwl-url ${RAW_URL} --app-pack-register-endpoint ${{ inputs.app-pack-register-endpoint }} --app-pack-template-file ${{ github.action_path }}/templates/ogcapppkg.yml
       shell: bash

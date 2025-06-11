@@ -40,6 +40,7 @@ jobs:
           workflow-configuration-path: nasa/ogc/algorithm_config.yml
           dockerfile-path: nasa/Dockerfile
           deploy-app-pack: true
+          app-pack-register-endpoint: https://api.dit.maap-project.org/api/ogc/processes
         env:
           # MAAP PGT token is required to deploy the process
           MAAP_PGT: ${{ secrets.MAAP_PGT_MLUCAS }}
@@ -63,18 +64,18 @@ Run the following to generate a CWL workflow file from the command line:
 
 `python build_cwl_workflow.py --yaml-file data/algorithm_config.yml`
 
-This will create `workflows/process.cwl`.
+This will create `cwl_workflows/process.cwl`.
 
 To run CWL validation, install `cwltool` and run with the validation flag:
 ```
 pip install cwltool &&
-cwltool --validate workflows/process.cwl
+cwltool --validate cwl_workflows/process.cwl
 ```
 
 To run OGC validation, install `ogc_ap_validator` and run the validation:
 ```
 pip install ogc_ap_validator &&
-ap-validator workflows/process.cwl
+ap-validator cwl_workflows/process.cwl
 ```
 
 > [!NOTE]

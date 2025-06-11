@@ -265,7 +265,7 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert YML workflow configuration to CWL workflow.")
     parser.add_argument("--yaml-file", type=str, help="Path to the input workflow YML configuration file.", required=True)
-    parser.add_argument("--workflow-output-dir", type=str, default="workflows", help="Directory workflow files will be written to. If not provided, `workflows` will be used as default. If the `workflows` directory does not exist, it will be created.")
+    parser.add_argument("--workflow-output-dir", type=str, default="cwl_workflows", help="Directory workflow files will be written to. If not provided, `workflows` will be used as default. If the `workflows` directory does not exist, it will be created.")
     parser.add_argument("--cwl-template-file", type=str, default="templates/process.v1_2.cwl", help="Path to the CWL template file. Default template used is compliant with CWL v1.2.")
 
     args = parser.parse_args()
