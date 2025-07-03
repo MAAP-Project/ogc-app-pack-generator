@@ -37,6 +37,7 @@ s:contributor:
 
 s:citation: null
 s:codeRepository: null
+s:commitHash: null
 s:dateCreated: null
 s:license: null
 s:softwareVersion: null
