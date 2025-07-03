@@ -255,6 +255,10 @@ def yaml_to_cwl(yaml_file, workflow_output_dir, template_file):
     workflow["s:softwareVersion"] = "1.0.0"
     workflow["$graph"][1]["requirements"]["DockerRequirement"]["dockerPull"] = os.getenv('DOCKER_TAG')
 
+    # Add information that is not required to be compliant with OGC and CWL best practices and is not in the YML input file,
+    # yet is desired by MAAP.
+    workflow["s:commitHash"] = os.getenv('GIT_COMMIT_HASH')
+
     # Dump data to workflow file
     workflow_file = os.path.join(workflow_output_dir, os.getenv('WORKFLOW_FILE_NAME', 'process.cwl'))
     with open(workflow_file, 'w') as f:

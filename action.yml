@@ -63,6 +63,7 @@ runs:
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
+        GIT_COMMIT_HASH: ${{ github.sha }}
 
     - name: Check generated CWL workflow
       run: |
