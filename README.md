@@ -37,7 +37,7 @@ jobs:
         uses: MAAP-Project/ogc-app-pack-generator@main
         with:
           # Specify action inputs
-          workflow-configuration-path: nasa/ogc/algorithm_config.yml
+          algorithm-configuration-path: nasa/ogc/algorithm_config.yml
           dockerfile-path: nasa/Dockerfile
           deploy-app-pack: true
           app-pack-register-endpoint: https://api.dit.maap-project.org/api/ogc/processes
