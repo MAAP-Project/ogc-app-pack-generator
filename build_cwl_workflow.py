@@ -48,7 +48,9 @@ def process_value(target, value):
     """
     match target[-1]:
         case "s:version":
-            return re.sub(r'[^a-zA-Z0-9 ]', '_', value)
+            if isinstance(value, str):
+                return value.replace("/", "_")
+            return value
         case _:
             return value
 
