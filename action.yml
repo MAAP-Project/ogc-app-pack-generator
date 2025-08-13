@@ -37,6 +37,11 @@ runs:
         pip list
       shell: bash
 
+    - name: printenv
+      run: |
+        printenv
+      shell: bash
+
     - name: Validate action inputs
       run: python3 ${{ github.action_path }}/validate_inputs.py
       shell: bash
