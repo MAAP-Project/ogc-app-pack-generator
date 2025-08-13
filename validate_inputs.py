@@ -32,7 +32,7 @@ def validate_algorithm_config_file(inputs):
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
         algorithm_container_url = config.get('algorithm_container_url', '').strip()
-        dockerfile_path = inputs.get('dockerfile-path', '').strip()
+        dockerfile_path = os.environ.get('DOCKERFILE_PATH', '')
         has_container = bool(algorithm_container_url)
         has_dockerfile_path = bool(dockerfile_path)
 
@@ -60,22 +60,14 @@ def validate_algorithm_config_file(inputs):
     return True
 
 
-def main():
-    inputs = {}
-    for key, value in os.environ.items():
-        if key.startswith('INPUT_'):
-            input_name = key[6:].lower().replace('_', '-')
-            inputs[input_name] = value
-    
-    print(f"Inputs received: {list(inputs.keys())}")
-    
+def main():    
     validations = [
         ("Algorithm configuration file", validate_algorithm_config_file)
     ]
     
     for validation_name, validation_func in validations:
         print(f"Running {validation_name} validation...")
-        if not validation_func(inputs):
+        if not validation_func():
             print(f"{validation_name} validation failed")
             sys.exit(1)
         print(f"{validation_name} validation passed")
