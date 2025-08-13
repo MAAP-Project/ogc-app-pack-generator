@@ -38,7 +38,7 @@ runs:
       shell: bash
 
     - name: Validate action inputs
-      run: source python3 ${{ github.action_path }}/validate_inputs.py
+      run: python3 ${{ github.action_path }}/validate_inputs.py
       shell: bash
       env:
         DOCKERFILE_PATH: ${{ inputs.dockerfile-path }}

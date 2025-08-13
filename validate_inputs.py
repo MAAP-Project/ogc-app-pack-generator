@@ -48,14 +48,17 @@ def validate_algorithm_config_file():
 
         if has_container:
             print(f"Setting DOCKER_TAG environment variable to {algorithm_container_url}")
-            os.environ['DOCKER_TAG'] = algorithm_container_url
+            with open(os.environ['GITHUB_ENV'], 'a') as env_file:
+                env_file.write(f"DOCKER_TAG={algorithm_container_url}\n")
+
         else:
             github_repo = os.environ.get('GITHUB_REPOSITORY', '').lower()
             github_ref_name = os.environ.get('GITHUB_REF_NAME', '')
             github_ref_name_clean = github_ref_name.replace('/', '_')
             docker_tag = f"ghcr.io/{github_repo}:{github_ref_name_clean}"
             print(f"Setting DOCKER_TAG environment variable to {docker_tag}")
-            os.environ['DOCKER_TAG'] = docker_tag
+            with open(os.environ['GITHUB_ENV'], 'a') as env_file:
+                env_file.write(f"DOCKER_TAG={docker_tag}\n")
     
     return True
 
