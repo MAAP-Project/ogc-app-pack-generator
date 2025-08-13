@@ -42,6 +42,7 @@ runs:
       shell: bash
       env:
         DOCKERFILE_PATH: ${{ inputs.dockerfile-path }}
+        ALGORITHM_CONFIGURATION_PATH: ${{ inputs.algorithm-configuration-path }}
 
     - name: Create env variable of lowercase GitHub repo name
       run: |

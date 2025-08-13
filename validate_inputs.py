@@ -10,9 +10,9 @@ import re
 from urllib.parse import urlparse
 from pathlib import Path
 
-def validate_algorithm_config_file(inputs):
+def validate_algorithm_config_file():
     """Validate that the algorithm configuration file is a valid YAML file."""
-    config_path = inputs.get('algorithm-configuration-path', '').strip()
+    config_path = os.environ.get('ALGORITHM_CONFIGURATION_PATH', '')
     if not config_path:
         print("ERROR: algorithm-configuration-path is required.")
         return False
