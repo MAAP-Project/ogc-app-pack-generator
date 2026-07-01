@@ -1,19 +1,17 @@
 name: "Build OGC Application Package"
+author: "MAAP-Project"
 description: "A GitHub Action to build an OGC Application Package."
 inputs:
   algorithm-configuration-path:
-    description: "Path to the algorithm configuration YML file"
-    required: true
-  github-token:
-    description: "GitHub token for authentication"
+    description: "Path to the algorithm configuration YAML file"
     required: true
   dockerfile-path:
     description: "Path to Dockerfile"
     required: false
   deploy-app-pack:
     description: "Flag that controls whether or not to deploy application package"
-    required: true
-    default: false
+    required: false
+    default: "false"
   app-pack-register-endpoint:
     description: "URL to application package registry to deploy application packages to"
     required: false
@@ -22,9 +20,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout repo content
-      uses: actions/checkout@v4
-
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -89,7 +84,7 @@ runs:
     - name: Build and push algorithm Docker image
       if: ${{ inputs.dockerfile-path != '' }}
       id: push-algorithm
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: ${{ inputs.dockerfile-path }}
@@ -122,3 +117,7 @@ runs:
         RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/${FILE_PATH}"
         python3 ${{ github.action_path }}/deploy_app_pack.py --process-cwl-url ${RAW_URL} --app-pack-register-endpoint ${{ inputs.app-pack-register-endpoint }} --app-pack-template-file ${{ github.action_path }}/templates/ogcapppkg.yml
       shell: bash
+
+branding:
+  icon: "package"
+  color: "blue"

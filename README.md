@@ -1,11 +1,14 @@
 # OGC Application Package Generator
 GitHub action to build OGC application packages compliant with CWL and OGC best practices.
 
-This action builds a CWL workflow file from an input YML file. The CWL workflow file is validated using `cwltool` and `ogc_ap_validator` to ensure it is compliant with CWL and OGC best practices. It is then committed to the client repository's working branch under `workflows/`. A docker image will be built from the user-specified Dockerfile and pushed to the client repository's GitHub Container Registry.
+This action builds a CWL workflow file from an input YAML file. The CWL workflow file is validated using `cwltool` and `ogc_ap_validator` to ensure it is compliant with CWL and OGC best practices. It is then committed to the client repository's working branch under `cwl_workflows/`. A docker image will be built from the user-specified Dockerfile and pushed to the client repository's GitHub Container Registry.
 
-See `data/algorithm_config.yml` for a sample YML input file.
+See `data/algorithm_config.yml` for a sample YAML input file.
 
 See `data/process_sardem-sarsen_mlucas_nasa-ogc.cwl` for a sample workflow file generated from the `data/algorithm_config.yml` input.
+
+> [!IMPORTANT]
+> This action **writes to your repository**. On each run it commits the generated CWL workflow file to `cwl_workflows/` on the triggering branch and pushes the commit back using the workflow's `GITHUB_TOKEN`. It also builds and pushes a Docker image to your repository's GitHub Container Registry (when `dockerfile-path` is set). Because of this, the calling workflow must grant `contents: write` and `packages: write` permissions (see the sample below), and the action must run on a branch it is allowed to push to. Do not use this action on untrusted pull requests.
 
 ## Build OGC application package using GitHub actions
 
@@ -13,7 +16,10 @@ To use this action in a client repository, create a GitHub workflow file at the 
 
 `touch .github/workflows/my_workflow.yml`
 
-Copy the sample workflow below into `my_workflow.yml` and be sure to change the action inputs if needed:
+Copy the sample workflow below into `my_workflow.yml` and be sure to change the action inputs if needed.
+
+> [!NOTE]
+> Your workflow **must check out the repository** (with `actions/checkout`) in a step before invoking this action, as shown below. The action operates on the checked-out working tree and pushes the generated workflow file back to it.
 
 ```
 on:
@@ -50,11 +56,19 @@ jobs:
 
 | Parameter        | Description           | Required | Default | Type  |
 |:-------------:|:---------------------:|:-----:|:-----:|:-----:|
-| workflow-configuration-path      | Path to algorithm configuration YML file | Yes | - | string ex. `nasa/ogc/algorithm_config.yml` |
-| dockerfile-path | Path to Dockerfile that will be used to build the docker image | Yes | - | string ex. `nasa/Dockerfile`
-| deploy-app-pack | Flag indicating whether or not to deploy the application package to a registry | No | false | Boolean ex. `true`|
-| app-pack-register-endpoint | Deployment request URL used to deploy the application package to a registry | No | - | string ex `https://api.dit.maap-project.org/api/ogc/processes`|
-| MAAP_TOKEN | The MAAP_TOKEN used in the application package deployment request. The sample workflow shows this parameter being accessed from the client repository's secrets store. | No | - | string
+| algorithm-configuration-path | Path to the algorithm configuration YAML file | Yes | - | string ex. `nasa/ogc/algorithm_config.yml` |
+| dockerfile-path | Path to the Dockerfile used to build the algorithm image. Omit if `algorithm_container_url` is set in the config file (the two are mutually exclusive). | No | - | string ex. `nasa/Dockerfile` |
+| deploy-app-pack | Whether to deploy the application package to a registry | No | `false` | boolean ex. `true` |
+| app-pack-register-endpoint | Deployment request URL for the application package registry. Required when `deploy-app-pack` is `true`. | No | - | string ex. `https://api.dit.maap-project.org/api/ogc/processes` |
+
+> [!NOTE]
+> To use a prebuilt container image instead of building one from a Dockerfile, set `algorithm_container_url` in the algorithm configuration YAML file and omit `dockerfile-path`. Exactly one of the two must be provided.
+
+### Environment variables:
+
+| Variable | Description | Required |
+|:-------------:|:---------------------:|:-----:|
+| MAAP_TOKEN | Auth token sent with the deployment request (as the `proxy-ticket` header). Only needed when `deploy-app-pack` is `true`. Pull it from the client repository's secrets store as shown in the sample workflow above. | Conditional |
 
 > [!NOTE]
 > The workflow is currently set to trigger on a push to any branch. To limit workflow triggering to a specific branch, replace `'**'` with your branch name.
@@ -117,9 +131,9 @@ Sample command to execute a workflow. Be sure to provide any required inputs:
 
 `cwltool cwl_workflows/process.cwl --input_1 "input1" --input_2 "input2"`
 
-Inputs may also be provided as a YML file, for example:
+Inputs may also be provided as a YAML file, for example:
 
 `cwltool cwl_workflows/process.cwl data/input.yml`
 
-See `data/input.yml` for a sample YML input file.
+See `data/input.yml` for a sample YAML input file.
 
