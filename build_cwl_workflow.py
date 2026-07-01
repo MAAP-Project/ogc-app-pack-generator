@@ -1,10 +1,10 @@
 '''
 Builds a CWL workflow from a YAML file containing algorithm information that will be parsed to create the workflow file.
 See data/algorithm_config.yml for an example. This example contains the information
-needed to create a workflow that is compliant with OGC and CWL best practices.
+needed to create a CWL workflow that is compliant with OGC and CWL best practices.
 
---workflow-output-dir (optional)
-The directory the workflow files should be written to. If not provided, the default is `workflows`
+--cwl-workflow-dir (optional)
+The directory the CWL workflow files will be written to. If not provided, the default is `cwl_workflows`
 and the directory will be created if it does not exist.
 
 --cwl-template-file (optional)
@@ -25,7 +25,6 @@ build_cwl_workflow.py --config-file data/algorithm_config.yml --workflow-output-
 import yaml
 import argparse
 import os
-import re
 from datetime import date
 import logging
 
@@ -88,7 +87,7 @@ def add_input_default(input_type, input_default):
 
 def yaml_to_cwl(config_file, workflow_output_dir, template_file):
     """
-    Create a CWL file compliant with CWL and OGC best practices from a YAML input file.
+    Create a CWL file compliant with CWL and OGC best practices from a yml input file.
 
     Args:
         config_file (str): Path to input YAML file.
@@ -107,8 +106,8 @@ def yaml_to_cwl(config_file, workflow_output_dir, template_file):
         workflow = yaml.safe_load(f)
 
     # Create output directory if nonexistent
-    if not os.path.exists(workflow_output_dir):
-        os.makedirs(workflow_output_dir)
+    if not os.path.exists(cwl_workflow_dir):
+        os.makedirs(cwl_workflow_dir)
 
 
     # Attempt to retrieve information required to be compliant with OGC and CWL v1.2 best practices
@@ -144,8 +143,8 @@ def yaml_to_cwl(config_file, workflow_output_dir, template_file):
             logging.warning(f'Expected key `{key}` not found in algorithm config.')
 
 
-    # Handle inputs and outputs separately since the same information is used in
-    # slightly different formats across several different fields.
+    # Handle inputs and outputs separately since the same information is used
+    # differently across several fields.
     workflow_inputs = []
     step_inputs = []
     process_inputs = []
@@ -257,7 +256,7 @@ def yaml_to_cwl(config_file, workflow_output_dir, template_file):
     workflow["s:commitHash"] = os.getenv('GIT_COMMIT_HASH')
 
     # Dump data to workflow file
-    workflow_file = os.path.join(workflow_output_dir, os.getenv('WORKFLOW_FILE_NAME', 'process.cwl'))
+    workflow_file = os.path.join(cwl_workflow_dir, os.getenv('CWL_WORKFLOW_FILE_NAME', 'process.cwl'))
     with open(workflow_file, 'w') as f:
         yaml.dump(workflow, f, default_flow_style=False, sort_keys=False)
 
