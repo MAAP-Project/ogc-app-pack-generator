@@ -76,7 +76,7 @@ jobs:
 ## Build CWL workflow file from the command line
 Run the following to generate a CWL workflow file from the command line:
 
-`python build_cwl_workflow.py --yaml-file data/algorithm_config.yml`
+`python build_cwl_workflow.py --config-file data/algorithm_config.yml`
 
 This will create `cwl_workflows/process.cwl`.
 

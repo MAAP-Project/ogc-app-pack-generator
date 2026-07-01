@@ -24,7 +24,7 @@ DOCKER_TAG=ghcr.io/example/repo:test \
 GIT_COMMIT_HASH=local \
 WORKFLOW_FILE_NAME=process_test.cwl \
 python3 build_cwl_workflow.py \
-  --yaml-file data/algorithm_config.yml \
+  --config-file data/algorithm_config.yml \
   --cwl-template-file templates/process.v1_2.cwl
 
 cwltool --validate --strict cwl_workflows/process_test.cwl

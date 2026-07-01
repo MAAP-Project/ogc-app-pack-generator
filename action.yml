@@ -54,7 +54,7 @@ runs:
       shell: bash
 
     - name: Generate OGC application package process CWL
-      run: python3 ${{ github.action_path }}/build_cwl_workflow.py --yaml-file ${{ inputs.algorithm-configuration-path }} --cwl-template-file  ${{ github.action_path }}/templates/process.v1_2.cwl
+      run: python3 ${{ github.action_path }}/build_cwl_workflow.py --config-file ${{ inputs.algorithm-configuration-path }} --cwl-template-file  ${{ github.action_path }}/templates/process.v1_2.cwl
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
