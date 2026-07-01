@@ -42,8 +42,8 @@ jobs:
           deploy-app-pack: true
           app-pack-register-endpoint: https://api.dit.maap-project.org/api/ogc/processes
         env:
-          # MAAP PGT token is required to deploy the process
-          MAAP_PGT: ${{ secrets.MAAP_PGT_MLUCAS }}
+          # MAAP token is required to deploy the process
+          MAAP_TOKEN: ${{ secrets.MAAP_TOKEN_MLUCAS }}
 ```
 
 ### Action Inputs:
@@ -54,7 +54,7 @@ jobs:
 | dockerfile-path | Path to Dockerfile that will be used to build the docker image | Yes | - | string ex. `nasa/Dockerfile`
 | deploy-app-pack | Flag indicating whether or not to deploy the application package to a registry | No | false | Boolean ex. `true`|
 | app-pack-register-endpoint | Deployment request URL used to deploy the application package to a registry | No | - | string ex `https://api.dit.maap-project.org/api/ogc/processes`|
-| MAAP_PGT token | The MAAP_PGT token used in the application package deployment request. The sample workflow shows this parameter being accessed from the client repository's secrets store. | No | - | string
+| MAAP_TOKEN | The MAAP_TOKEN used in the application package deployment request. The sample workflow shows this parameter being accessed from the client repository's secrets store. | No | - | string
 
 > [!NOTE]
 > The workflow is currently set to trigger on a push to any branch. To limit workflow triggering to a specific branch, replace `'**'` with your branch name.
