@@ -11,8 +11,8 @@ from urllib.parse import urlparse
 from pathlib import Path
 
 def validate_algorithm_config_file():
-    """Validate that the algorithm configuration file is a valid YAML file."""
-    config_path = os.environ.get('ALGORITHM_CONFIGURATION_PATH', '')
+    """Validate algorithm config YAML file."""
+    config_path = os.environ.get('CONFIG_FILE_PATH', '')
     if not config_path:
         print("ERROR: algorithm-configuration-path is required.")
         return False
@@ -22,16 +22,16 @@ def validate_algorithm_config_file():
         with open(config_path, 'r') as f:
             yaml.safe_load(f)
     except yaml.YAMLError as e:
-        print(f"ERROR: Algorithm configuration file is not valid YAML: {e}")
+        print(f"ERROR: Algorithm configuration file provided is not valid YAML: {e}")
         return False
     except Exception as e:
         print(f"ERROR: Cannot read algorithm configuration file: {e}")
         return False
 
-    # If algorithm_container_url is provided in yaml file, there won't be a need to build a container.
+    # If algorithm_container_url is provided in YAML file, there won't be a need to build a container.
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
-        algorithm_container_url = config.get('algorithm_container_url', '').strip()
+        algorithm_container_url = (config.get('algorithm_container_url') or '').strip()
         dockerfile_path = os.environ.get('DOCKERFILE_PATH', '')
         has_container = bool(algorithm_container_url)
         has_dockerfile_path = bool(dockerfile_path)
@@ -46,20 +46,35 @@ def validate_algorithm_config_file():
             print("ERROR: algorithm_container_url or dockerfile-path must be provided.")
             return False
 
-        if has_container:
-            print(f"Setting DOCKER_TAG environment variable to {algorithm_container_url}")
-            with open(os.environ['GITHUB_ENV'], 'a') as env_file:
-                env_file.write(f"DOCKER_TAG={algorithm_container_url}\n")
+        # The algorithm name (not the repo name) drives both the generated CWL
+        # workflow file name and the built Docker image name.
+        algorithm_name = (config.get('algorithm_name') or '').strip()
+        if not algorithm_name:
+            print("ERROR: algorithm_name is required in the algorithm configuration file.")
+            return False
 
+        github_ref_name = os.environ.get('GITHUB_REF_NAME', '')
+        github_ref_name_clean = github_ref_name.replace('/', '_')
+
+        # CWL workflow file name: process_<algorithm_name>_<branch>.cwl
+        algorithm_name_clean = algorithm_name.replace('/', '_')
+        cwl_workflow_file_name = f"process_{algorithm_name_clean}_{github_ref_name_clean}.cwl"
+        print(f"Setting CWL_WORKFLOW_FILE_NAME environment variable to {cwl_workflow_file_name}")
+        with open(os.environ['GITHUB_ENV'], 'a') as env_file:
+            env_file.write(f"CWL_WORKFLOW_FILE_NAME={cwl_workflow_file_name}\n")
+
+        if has_container:
+            docker_tag = algorithm_container_url
         else:
-            github_repo = os.environ.get('GITHUB_REPOSITORY', '').lower()
-            github_ref_name = os.environ.get('GITHUB_REF_NAME', '')
-            github_ref_name_clean = github_ref_name.replace('/', '_')
-            docker_tag = f"ghcr.io/{github_repo}:{github_ref_name_clean}"
-            print(f"Setting DOCKER_TAG environment variable to {docker_tag}")
-            with open(os.environ['GITHUB_ENV'], 'a') as env_file:
-                env_file.write(f"DOCKER_TAG={docker_tag}\n")
-    
+            github_owner = os.environ.get('GITHUB_REPOSITORY', '').split('/')[0].lower()
+            # Docker image names must be lowercase and limited to [a-z0-9._-].
+            docker_image_name = re.sub(r'[^a-z0-9._-]+', '-', algorithm_name.lower()).strip('-')
+            docker_tag = f"ghcr.io/{github_owner}/{docker_image_name}:{github_ref_name_clean}"
+
+        print(f"Setting DOCKER_TAG environment variable to {docker_tag}")
+        with open(os.environ['GITHUB_ENV'], 'a') as env_file:
+            env_file.write(f"DOCKER_TAG={docker_tag}\n")
+
     return True
 
 

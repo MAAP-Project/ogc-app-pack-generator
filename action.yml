@@ -1,18 +1,20 @@
-name: "Build OGC Application Package"
-description: "A GitHub Action to build an OGC Application Package."
+name: "Build & Deploy OGC Application Package"
+author: "MAAP-Project"
+description: "A GitHub Action to build & deploy an OGC Application Package."
 inputs:
   algorithm-configuration-path:
-    description: "Path to the algorithm configuration YML file"
+    description: "Path to the algorithm configuration YAML file"
     required: true
-  github-token:
-    description: "GitHub token for authentication"
-    required: true
+  cwl-workflow-dir:
+    description: "Directory the generated CWL workflow file will be written to"
+    required: false
+    default: "cwl_workflows"
   dockerfile-path:
     description: "Path to Dockerfile"
     required: false
   deploy-app-pack:
     description: "Flag that controls whether or not to deploy application package"
-    required: true
+    required: false
     default: false
   app-pack-register-endpoint:
     description: "URL to application package registry to deploy application packages to"
@@ -22,103 +24,95 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout repo content
-      uses: actions/checkout@v4
-
-    - name: Setup Python
-      uses: actions/setup-python@v5
+    - name: "Setup Python"
+      uses: actions/setup-python@v6
       with:
         python-version: 3.12
 
-    - name: Install dependencies
+    - name: "Install dependencies"
       run: |
         python -m pip install --upgrade pip
         pip install -r ${{ github.action_path }}/requirements.txt
         pip list
       shell: bash
 
-    - name: Validate action inputs
+    - name: "Validate action inputs"
       run: python3 ${{ github.action_path }}/validate_inputs.py
       shell: bash
       env:
         DOCKERFILE_PATH: ${{ inputs.dockerfile-path }}
-        ALGORITHM_CONFIGURATION_PATH: ${{ inputs.algorithm-configuration-path }}
+        CONFIG_FILE_PATH: ${{ inputs.algorithm-configuration-path }}
 
-    - name: Create env variable of lowercase GitHub repo name
-      run: |
-          GITHUB_REPO_LOWER=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
-          echo "GITHUB_REPO_LOWER=$GITHUB_REPO_LOWER" >>${GITHUB_ENV}
-      shell: bash
-
-    - name: Set workflow file name environment variable
-      run: |
-          REPO_NAME=$(basename ${{ env.GITHUB_REPO_LOWER }})
-          WORKFLOW_FILE_NAME="process_${REPO_NAME}_${GITHUB_REF_NAME}.cwl"
-          WORKFLOW_FILE_NAME="${WORKFLOW_FILE_NAME//\//_}"
-          echo "WORKFLOW_FILE_NAME=$WORKFLOW_FILE_NAME" >>${GITHUB_ENV}
-      shell: bash
-
-    - name: Generate OGC application package process CWL
-      run: python3 ${{ github.action_path }}/build_cwl_workflow.py --yaml-file ${{ inputs.algorithm-configuration-path }} --cwl-template-file  ${{ github.action_path }}/templates/process.v1_2.cwl
+    - name: "Generate OGC application package process CWL"
+      run: python3 ${{ github.action_path }}/build_cwl_workflow.py --config-file ${{ inputs.algorithm-configuration-path }} --cwl-workflow-dir ${{ inputs.cwl-workflow-dir }} --cwl-template-file  ${{ github.action_path }}/templates/process.v1_2.cwl
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
         GIT_COMMIT_HASH: ${{ github.sha }}
 
-    - name: Check generated CWL workflow
-      run: |
-        ls -lrt cwl_workflows/
+    - name: "Run CWL validator"
+      run: cwltool --validate --strict --verbose ${{ inputs.cwl-workflow-dir }}/${{ env.CWL_WORKFLOW_FILE_NAME }}
       shell: bash
 
-    - name: Run CWL validator
-      run: cwltool --validate --strict --verbose cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
+    - name: "Run OGC validator"
+      run: ap-validator --detail all ${{ inputs.cwl-workflow-dir }}/${{ env.CWL_WORKFLOW_FILE_NAME }}
       shell: bash
 
-    - name: Run OGC validator
-      run: ap-validator --detail all cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
-      shell: bash
-
-    - name: Log in to GitHub Container Registry
+    - name: "Log in to GitHub Container Registry"
       if: ${{ inputs.dockerfile-path != '' }}
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ github.token }}
 
-    - name: Build and push algorithm Docker image
+    - name: "Build and push algorithm Docker image"
       if: ${{ inputs.dockerfile-path != '' }}
       id: push-algorithm
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
+      env:
+        DOCKER_BUILD_SUMMARY: false
       with:
         context: .
         file: ${{ inputs.dockerfile-path }}
         push: true
         tags: ${{ env.DOCKER_TAG }}
 
-    - name: Configure Git
+    - name: "Configure Git"
       run: |
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
       shell: bash
 
-    - name: Commit and push workflow file
+    - name: "Commit and push workflow file"
       run: |
-        git add cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
+        git add ${{ inputs.cwl-workflow-dir }}/${{ env.CWL_WORKFLOW_FILE_NAME }}
 
         if git diff --staged --quiet; then
           echo "No changes to commit."
-          exit 0
+        else
+          git commit -m "Committed CWL workflow via github actions"
+          git push
         fi
 
-        git commit -m "Committed workflow via github actions"
-        git push
+        echo "COMMIT_SHA=$(git rev-parse HEAD)" >> ${GITHUB_ENV}
       shell: bash
 
-    - name: Deploy application package
+    - name: "Submit request for deployment"
       if: ${{ inputs.deploy-app-pack == 'true' }}
       run: |
-        FILE_PATH=cwl_workflows/${{ env.WORKFLOW_FILE_NAME }}
-        RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/${FILE_PATH}"
+        FILE_PATH=${{ inputs.cwl-workflow-dir }}/${{ env.CWL_WORKFLOW_FILE_NAME }}
+        RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${{ env.COMMIT_SHA }}/${FILE_PATH}"
         python3 ${{ github.action_path }}/deploy_app_pack.py --process-cwl-url ${RAW_URL} --app-pack-register-endpoint ${{ inputs.app-pack-register-endpoint }} --app-pack-template-file ${{ github.action_path }}/templates/ogcapppkg.yml
       shell: bash
+
+    - name: "Deploy: Write deployment summary"
+      if: ${{ inputs.deploy-app-pack == 'true' && env.PROCESS_PIPELINE_LINK != '' }}
+      run: |
+        echo "## Deployment" >> $GITHUB_STEP_SUMMARY
+        echo "View status of algorithm deployment to MAAP: ${PROCESS_PIPELINE_LINK}" >> $GITHUB_STEP_SUMMARY
+      shell: bash
+
+branding:
+  icon: "package"
+  color: "blue"

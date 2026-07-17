@@ -9,12 +9,31 @@ import json
 import sys
 
 
+def set_github_env(key, value):
+    """Write a key-value pair to $GITHUB_ENV if running in GitHub Actions."""
+    github_env = os.getenv("GITHUB_ENV")
+    if github_env:
+        with open(github_env, "a") as f:
+            f.write(f"{key}={value}\n")
+
+
+def extract_pipeline_link(response_text):
+    """Extract processPipelineLink href from a JSON response and export it to GITHUB_ENV."""
+    try:
+        data = json.loads(response_text)
+        href = data.get("processPipelineLink", {}).get("href")
+        if href:
+            set_github_env("PROCESS_PIPELINE_LINK", href)
+    except (json.JSONDecodeError, AttributeError):
+        pass
+
+
 def submit_request(url, data, headers):
     """
     Submit a request to the application package registry. A POST request is attempted first. If the response to the POST
     is an HTTP status code of 409, this indicates the process already exists then a PUT request will be submitted,
     overwriting the existing process.
-    
+
     Args:
         url (str): The registry URL.
         data (dict): The request body, containing the process CWL URL or path.
@@ -27,6 +46,7 @@ def submit_request(url, data, headers):
         response = requests.post(url, data=json.dumps(data), headers=headers)
         print(response.text)
         response.raise_for_status()
+        extract_pipeline_link(response.text)
         return True
 
     except requests.exceptions.HTTPError as e:
@@ -42,6 +62,7 @@ def submit_request(url, data, headers):
                 response = requests.put(url, data=json.dumps(data), headers=headers)
                 response.raise_for_status()
                 print(f'Response: {response.text}')
+                extract_pipeline_link(response.text)
                 return True
 
             except (KeyError, requests.exceptions.RequestException, ValueError) as e:
@@ -69,7 +90,7 @@ def deploy_app_pack(process_cwl_url, app_pack_registry, template_file):
         None
         
     Raises:
-        ValueError: Raises a ValueError if the MAAP_PGT token is not set. This token is required to deploy processes.
+        ValueError: Raises a ValueError if the MAAP_TOKEN is not set. This token is required to deploy processes.
     """
     with open(template_file, 'r') as f:
         data = yaml.safe_load(f)
@@ -77,12 +98,12 @@ def deploy_app_pack(process_cwl_url, app_pack_registry, template_file):
     if data.get("executionUnit", {}).get("href"):
         data["executionUnit"]["href"] = process_cwl_url
 
-    maap_pgt_token = os.getenv('MAAP_PGT')
-    if not maap_pgt_token:
-        raise ValueError("Environment variable `MAAP_PGT` is not set.")
+    maap_token = os.getenv('MAAP_TOKEN')
+    if not maap_token:
+        raise ValueError("Environment variable `MAAP_TOKEN` is not set.")
 
     headers = {
-        'proxy-ticket': maap_pgt_token,
+        'proxy-ticket': maap_token,
         'Content-Type': 'application/json'
     }
 
